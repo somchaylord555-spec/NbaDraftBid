@@ -1,0 +1,2216 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="theme-color" content="#f4f1ea">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>NBA Draft Auction</title>
+<style>
+:root{--bg:#f4f1ea;--bg2:#ebe6db;--fg:#1c1b19;--card:#fff;--mute:#7a766c;--line:#e6e1d6;--a:#e8590c;--a2:#ff8a3d;--b:#1c7ed6;--b2:#4dabf7;--gold:#b8860b;--sh:0 1px 2px rgba(28,27,25,.06),0 8px 24px rgba(28,27,25,.07);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121211;--bg2:#1a1917;--fg:#f1efe9;--card:#1f1e1c;--mute:#a09b90;--line:#34322e;--a:#ff8a4c;--a2:#ffb07a;--b:#5aa9ff;--b2:#8cc4ff;--gold:#e6b422;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#121211;--bg2:#1a1917;--fg:#f1efe9;--card:#1f1e1c;--mute:#a09b90;--line:#34322e;--a:#ff8a4c;--a2:#ffb07a;--b:#5aa9ff;--b2:#8cc4ff;--gold:#e6b422;--sh:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.35);color-scheme:dark}
+*{box-sizing:border-box}html,body{margin:0}
+body{min-height:100vh;color:var(--fg);font:16px/1.4 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;
+background:radial-gradient(900px 420px at 50% -120px,color-mix(in srgb,var(--a) 14%,transparent),transparent 70%),radial-gradient(700px 360px at 100% 0,color-mix(in srgb,var(--b) 10%,transparent),transparent 70%),repeating-linear-gradient(0deg,transparent 0 46px,color-mix(in srgb,var(--fg) 3%,transparent) 46px 47px),var(--bg);background-attachment:fixed}
+#app{max-width:520px;margin:0 auto;padding:16px 14px 28px}
+h1{font-size:22px;font-weight:900;letter-spacing:.02em;margin:2px 0 14px;text-align:center;background:linear-gradient(90deg,var(--a),var(--gold) 50%,var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.team{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 10px 8px;box-shadow:var(--sh);overflow:hidden}
+.team::before{content:"";position:absolute;left:0;right:0;top:0;height:5px}
+.team.t0::before{background:linear-gradient(90deg,var(--a),var(--a2))}.team.t1::before{background:linear-gradient(90deg,var(--b),var(--b2))}
+.team.t0{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 7%,var(--card)),var(--card) 60%)}.team.t1{background:linear-gradient(180deg,color-mix(in srgb,var(--b) 7%,var(--card)),var(--card) 60%)}
+.team h2{margin:2px 0 0;font-size:11px;font-weight:800;letter-spacing:.09em;text-transform:uppercase}.t0 h2{color:var(--a)}.t1 h2{color:var(--b)}
+.cash{display:inline-block;font-size:24px;font-weight:900;margin:2px 0 6px}
+.slot{display:flex;align-items:center;gap:6px;font-size:12px;padding:5px 4px;margin:0 -4px;border-top:1px solid var(--line);border-radius:8px;cursor:pointer;transition:background .15s}
+.slot:hover{background:color-mix(in srgb,var(--fg) 5%,transparent)}
+.slot b{flex:none;width:26px;text-align:center;font-size:10px;font-weight:800;color:var(--mute);background:var(--bg2);border-radius:6px;padding:2px 0}
+.slot span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.slot i{font-style:normal;color:var(--mute);font-size:11px}
+.slot.sel{background:color-mix(in srgb,var(--gold) 20%,transparent);box-shadow:inset 0 0 0 2px var(--gold)}
+.chem{font-size:11px;color:var(--mute);margin-top:6px;line-height:1.35}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px 16px;margin:12px 0;text-align:center;box-shadow:var(--sh)}
+.pcard{position:relative;border-top:5px solid var(--tc,var(--line));background:radial-gradient(380px 190px at 50% 0,color-mix(in srgb,var(--tc,transparent) 20%,transparent),transparent 70%),var(--card);animation:rise .22s ease-out}
+@keyframes rise{from{opacity:.4;transform:translateY(5px)}to{opacity:1;transform:none}}
+.pos{display:inline-block;background:linear-gradient(135deg,var(--fg),color-mix(in srgb,var(--fg) 70%,var(--bg)));color:var(--bg);border-radius:8px;padding:3px 12px;font-weight:800;font-size:13px;letter-spacing:.08em}
+.name{font-size:27px;font-weight:900;line-height:1.1;margin:10px 0 2px;letter-spacing:-.01em}
+.tier{display:inline-block;font-size:12px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;margin:6px 0 2px;padding:3px 12px;border-radius:999px;background:color-mix(in srgb,currentColor 13%,transparent)}
+.tag{font-size:13px;color:var(--mute)}.tag.L{display:inline-block;color:var(--gold);font-weight:800;background:color-mix(in srgb,var(--gold) 14%,transparent);border-radius:999px;padding:2px 12px;margin:4px 0}
+.tag.N{display:inline-block;font-weight:700;background:var(--bg2);border-radius:999px;padding:2px 12px;margin:4px 0}
+.stat{font-size:14px;color:var(--mute);margin:10px 0 4px;line-height:1.7}.stat b{font-size:21px;font-weight:900;color:var(--fg)}
+.stat2{font-size:13px;color:var(--mute);margin:3px 0}.stat2 b{font-size:15px;color:var(--fg)}
+.typ{display:inline-block;background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:3px 14px;font-weight:800;font-size:13px;margin:8px 0 2px}
+.bid{display:inline-block;font-size:16px;margin-top:10px;padding:8px 18px;border-radius:14px;background:var(--bg2)}.bid b{font-size:24px;font-weight:900;color:var(--gold)}
+.av{width:88px;height:88px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:900;color:#fff;box-shadow:0 0 0 4px var(--card),0 0 0 6px color-mix(in srgb,var(--fg) 12%,transparent),0 10px 22px rgba(0,0,0,.22),inset 0 -8px 14px rgba(0,0,0,.18),inset 0 6px 10px rgba(255,255,255,.18)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col{display:flex;flex-direction:column;gap:7px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px;box-shadow:var(--sh)}
+.c0.col{border-top:4px solid var(--a)}.c1.col{border-top:4px solid var(--b)}
+button{font:inherit;font-weight:800;border:0;border-radius:12px;padding:11px;color:#fff;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,.18),0 6px 14px rgba(0,0,0,.12);transition:transform .08s,filter .15s}
+button:hover:not(:disabled){filter:brightness(1.06)}button:active:not(:disabled){transform:translateY(1px) scale(.99);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+button:disabled{opacity:.32;cursor:not-allowed;box-shadow:none}
+.c0 button{background:linear-gradient(180deg,var(--a2),var(--a))}.c1 button{background:linear-gradient(180deg,var(--b2),var(--b))}
+.lbl{font-size:12px;font-weight:800;text-align:center;letter-spacing:.04em}.c0 .lbl{color:var(--a)}.c1 .lbl{color:var(--b)}
+.sold{width:100%;margin-top:12px;padding:14px;font-size:15px;background:linear-gradient(180deg,color-mix(in srgb,var(--fg) 82%,var(--bg)),var(--fg));color:var(--bg)}
+.sold+.sold{margin-top:8px}
+.msg{text-align:center;color:var(--mute);font-size:13px;min-height:18px;margin:10px 0 2px}
+.big{font-size:30px;font-weight:900;text-align:center;margin:14px 0;background:linear-gradient(90deg,var(--a),var(--gold),var(--b));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sb{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}.sb th{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--mute);padding:4px 2px}
+.sb td,.sb th{padding:6px 3px;text-align:center}.sb td:first-child{text-align:left;font-weight:800}.sb tr+tr td{border-top:1px solid var(--line)}
+.sb .t0 td:first-child{color:var(--a)}.sb .t1 td:first-child{color:var(--b)}.bx tr:nth-child(even) td{background:color-mix(in srgb,var(--fg) 3.5%,transparent)}
+.bx{font-size:11px;white-space:nowrap}.bx td:first-child{white-space:nowrap}
+.caps{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.cp{padding:7px 12px;font-size:12px;border-radius:999px;opacity:.5;box-shadow:none}.cp.on{opacity:1;outline:3px solid color-mix(in srgb,var(--gold) 70%,transparent);outline-offset:1px}
+.cp.c0{background:linear-gradient(180deg,var(--a2),var(--a))}.cp.c1{background:linear-gradient(180deg,var(--b2),var(--b))}
+.pk.c0{background:linear-gradient(180deg,var(--a2),var(--a))}.pk.c1{background:linear-gradient(180deg,var(--b2),var(--b))}
+.tgl{margin:6px 0 12px;font-size:13px;color:var(--mute);text-align:center}
+input,select{font:inherit;padding:11px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--fg);width:100%;transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 22%,transparent)}input:disabled{opacity:.3}
+.mvp{border:2px solid var(--gold);background:radial-gradient(360px 180px at 50% 0,color-mix(in srgb,var(--gold) 24%,transparent),transparent 70%),var(--card);animation:rise .3s ease-out}
+.mvp .tag:first-child{font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+.code{display:inline-block;font-size:34px;font-weight:900;letter-spacing:.3em;margin:8px 0;padding:6px 8px 6px 20px;border:2px dashed var(--gold);border-radius:14px;background:var(--bg2)}
+.sec{display:flex;align-items:center;gap:10px;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin:20px 0 8px}
+.sec::before,.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+.lv{color:var(--mute);font-size:13px;text-align:center;margin:12px 0}.lv a{color:var(--mute)}
+.hero{text-align:center;margin:4px 0 2px}
+.ball{font-size:56px;line-height:1;display:inline-block;animation:bnc 1.5s ease-in-out infinite;filter:drop-shadow(0 8px 6px rgba(0,0,0,.25))}
+@keyframes bnc{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-9px) rotate(14deg)}}
+.hero h1{font-size:30px;margin:6px 0 2px}
+.hs{color:var(--mute);font-size:13px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sg{cursor:pointer;background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px 8px;text-align:center;box-shadow:var(--sh);transition:.15s;opacity:.7}
+.sg.on{opacity:1;border-color:var(--gold);background:radial-gradient(200px 90px at 50% 0,color-mix(in srgb,var(--gold) 26%,transparent),transparent 75%),var(--card);transform:translateY(-1px)}
+.sg span{font-size:26px;display:block}.sg b{display:block;font-size:14px;margin-top:2px}.sg small{color:var(--mute);font-size:11px}
+.mc{position:relative;background:linear-gradient(160deg,color-mix(in srgb,var(--c) 15%,var(--card)),var(--card) 68%);border:1px solid color-mix(in srgb,var(--c) 38%,var(--line));border-radius:22px;padding:18px 14px 14px;margin:12px 0;box-shadow:var(--sh);overflow:hidden}
+.mc::before{content:"";position:absolute;left:0;right:0;top:0;height:6px;background:linear-gradient(90deg,var(--c),var(--c2))}
+.m-local{--c:var(--a);--c2:var(--a2)}.m-bot{--c:#7048e8;--c2:#b197fc}.m-net{--c:var(--b);--c2:var(--b2)}
+.mh{display:flex;align-items:center;gap:12px}
+.mi{flex:none;width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:linear-gradient(135deg,var(--c2),var(--c));box-shadow:0 6px 14px color-mix(in srgb,var(--c) 40%,transparent),inset 0 -6px 10px rgba(0,0,0,.15)}
+.mt{font-weight:900;font-size:18px;color:var(--c);line-height:1.15}
+.md{font-size:12px;color:var(--mute);margin-top:2px}
+.pl{margin-left:auto;flex:none;font-size:10px;font-weight:900;letter-spacing:.08em;padding:3px 9px;border-radius:999px;background:color-mix(in srgb,var(--c) 16%,transparent);color:var(--c)}
+.mb{width:100%;margin-top:12px;padding:14px;font-size:15px;background:linear-gradient(180deg,var(--c2),var(--c))}
+.lvs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.lvc{cursor:pointer;border:2px solid var(--line);border-radius:12px;padding:9px 4px;text-align:center;font-weight:800;font-size:13px;background:var(--card);transition:.15s}
+.lvc.on{border-color:var(--c);background:color-mix(in srgb,var(--c) 16%,var(--card));color:var(--c)}
+.or{display:flex;align-items:center;gap:10px;margin:14px 0 2px;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--mute)}
+.or::before,.or::after{content:"";flex:1;height:1px;background:color-mix(in srgb,var(--c) 30%,var(--line))}
+.jr{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:10px}
+.jr button{margin:0;padding:11px 22px}
+.jr input{text-align:center;font-weight:900;letter-spacing:.3em;font-size:18px}
+.mc .code{display:block;text-align:center;border-color:var(--c);margin:10px 0}
+.sbd{padding:16px 12px}
+.sbr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;margin:10px 0 4px}
+.sbn{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sbt.t0 .sbn,.sbt.t0 .sbs{color:var(--a)}.sbt.t1 .sbn,.sbt.t1 .sbs{color:var(--b)}
+.sbs{font-size:56px;font-weight:900;line-height:1.05;font-variant-numeric:tabular-nums}
+.sbs.pop{animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(1.3)}100%{transform:scale(1)}}
+.sbm{text-align:center;min-width:84px}.sbq{font-size:12px;font-weight:900;letter-spacing:.14em;color:var(--gold)}
+.sbc{font-size:26px;font-weight:900;font-family:ui-monospace,Menlo,Consolas,monospace}
+.pbar{height:6px;border-radius:999px;background:var(--bg2);overflow:hidden;margin:10px 0 12px}
+.pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--a),var(--gold),var(--b))}
+.spds{display:flex;gap:6px;align-items:center;justify-content:center;font-size:12px;color:var(--mute);font-weight:800}
+button.spd{padding:6px 14px;border-radius:999px;font-size:13px;background:var(--bg2);color:var(--fg);box-shadow:none;border:2px solid var(--line)}
+button.spd.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 22%,var(--bg2))}
+.feed{min-height:150px;margin-top:10px;text-align:left}
+.fe{font-size:13px;padding:6px 10px;border-radius:10px;margin:4px 0;background:var(--bg2);border-left:4px solid var(--line);animation:rise .2s ease-out}
+.fe.t0{border-left-color:var(--a)}.fe.t1{border-left-color:var(--b)}.fe b{font-size:15px}.fe small{color:var(--mute);float:right}
+.av{position:relative;overflow:hidden}
+.av img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 10%}
+.sa{flex:none;width:22px;height:22px;border-radius:50%;object-fit:cover;object-position:50% 10%;background:var(--bg2)}
+.turn{text-align:center;font-weight:800;padding:9px;border-radius:12px;margin:10px 0;font-size:15px}.turn.yt{background:color-mix(in srgb,#22c55e 18%,transparent);color:#16a34a}.turn.bt{background:color-mix(in srgb,#f59e0b 18%,transparent);color:#d97706}
+
+.ribbon{display:inline-block;font-size:11px;font-weight:900;letter-spacing:.2em;color:var(--gold);background:color-mix(in srgb,var(--gold) 14%,transparent);border:1px solid color-mix(in srgb,var(--gold) 45%,transparent);border-radius:999px;padding:3px 14px;margin-bottom:10px}
+.pcard.xl{padding:22px 16px 20px;border-radius:26px;box-shadow:0 0 0 1px var(--line),0 0 38px color-mix(in srgb,var(--tc,transparent) 32%,transparent),var(--sh)}
+.xl .av{width:128px;height:128px;font-size:44px;margin-bottom:14px}
+.xl .pos{font-size:15px;padding:5px 18px}
+.xl .name{font-size:34px;margin:12px 0 4px}
+.xl .tier{font-size:14px;padding:4px 16px}
+.xl .stat{font-size:15px;margin:14px 0 6px}.xl .stat b{font-size:28px}
+.xl .stat2{font-size:14px}.xl .stat2 b{font-size:17px}
+.xl .bid{font-size:18px;margin-top:16px;padding:12px 26px;border-radius:18px;border:2px solid color-mix(in srgb,var(--gold) 40%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--gold) 14%,var(--bg2)),var(--bg2))}
+.xl .bid b{font-size:40px;line-height:1;animation:bidpop .3s ease-out}
+@keyframes bidpop{0%{transform:scale(1.35)}100%{transform:scale(1)}}
+.bz .col{padding:14px;gap:10px;border-radius:20px}
+.bz input{font-size:20px;padding:14px;text-align:center;font-weight:800}
+.bz button{padding:14px;font-size:16px;border-radius:14px}
+.bz .lbl{font-size:14px}
+.bz .turn{font-size:17px;padding:12px;border-radius:14px}
+.bz .sold{padding:18px;font-size:17px;border-radius:16px}
+.teams.big{gap:12px}
+.teams.big .team{padding:18px 12px 12px;border-radius:24px}
+.teams.big .team::before{height:7px}
+.teams.big .team h2{font-size:13px;letter-spacing:.1em}
+.teams.big .cash{font-size:44px;line-height:1;margin:6px 0 10px;letter-spacing:-.02em}
+.teams.big .slot{font-size:14px;padding:9px 6px;gap:8px}
+.teams.big .slot b{width:34px;font-size:12px;padding:4px 0}
+.teams.big .slot i{font-size:12px}
+.teams.big .chem{font-size:12px}
+.team.lead{box-shadow:0 0 0 3px var(--gold),var(--sh)}
+
+/* ===== Colourful redesign ===== */
+:root{--a:#ff6b2c;--a2:#ffa24d;--b:#2d7bff;--b2:#62b0ff;--gold:#f2a100;--g:#22b85a;--bg:#fff3e2;--bg2:#ffe6c9;--card:#fff;--line:#f3d9b8;--mute:#8a6f55;--fg:#2a1d12}
+body{background:radial-gradient(circle at 15% 0,#ffd2a1 0,transparent 42%),radial-gradient(circle at 100% 15%,#b9ddff 0,transparent 42%),radial-gradient(circle at 0 100%,#ffc4de 0,transparent 42%),#fff7ec;background-attachment:fixed}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#150f33;--bg2:#2a1f5e;--card:#211850;--line:#43358a;--mute:#b9aeea;--fg:#f6f2ff;--a:#ff8a4c;--b:#5aa9ff;--gold:#ffc233}body{background:radial-gradient(circle at 15% 0,#4a2a8a 0,transparent 42%),radial-gradient(circle at 100% 15%,#1c4b9a 0,transparent 42%),radial-gradient(circle at 0 100%,#7a2a62 0,transparent 42%),#120c2b}}
+h1{font-size:28px;letter-spacing:.01em;filter:drop-shadow(0 2px 0 rgba(0,0,0,.12))}
+.card,.col,.team,.mc,.sg{border-width:2px;border-radius:24px}
+button{border-bottom:4px solid rgba(0,0,0,.28);border-radius:16px;font-weight:900;font-size:16px;box-shadow:0 6px 14px rgba(0,0,0,.12)}
+button:active:not(:disabled){transform:translateY(3px);border-bottom-width:1px}
+.sold{background:linear-gradient(180deg,#3bd983,#18a34a);color:#fff}
+.team.t0{background:linear-gradient(180deg,color-mix(in srgb,var(--a) 20%,var(--card)),var(--card) 70%)}
+.team.t1{background:linear-gradient(180deg,color-mix(in srgb,var(--b) 20%,var(--card)),var(--card) 70%)}
+.t0 h2{color:#fff;background:var(--a)}.t1 h2{color:#fff;background:var(--b)}
+.team h2{display:inline-block;padding:4px 12px;border-radius:999px}
+.cash::before{content:"💵 ";font-size:.55em}
+.slot b,.pos{color:#fff}
+.slot[data-k="PG"] b,.pos[data-k="PG"]{background:#2d7bff}.slot[data-k="SG"] b,.pos[data-k="SG"]{background:#22b85a}.slot[data-k="SF"] b,.pos[data-k="SF"]{background:#ff9f1a}.slot[data-k="PF"] b,.pos[data-k="PF"]{background:#ef4444}.slot[data-k="C"] b,.pos[data-k="C"]{background:#8b5cf6}.slot[data-k^="B"] b{background:#94a3b8}
+.steps{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:4px 0 10px}
+.st{font-size:12px;font-weight:800;padding:6px 12px;border-radius:999px;background:var(--bg2);color:var(--mute)}
+.st.on{background:linear-gradient(90deg,var(--a),var(--gold));color:#fff;transform:scale(1.07)}
+.st.done{background:color-mix(in srgb,var(--g) 25%,var(--card));color:var(--g)}
+.sec{color:var(--a);font-size:12px}
+.mb{font-size:16px}
+
+/* ===== Setting (lineup) screen ===== */
+.swt{display:flex;align-items:center;justify-content:flex-end;gap:8px;font-size:13px;font-weight:800;color:var(--mute);margin:2px 4px 6px;cursor:pointer}.swt input{width:20px;height:20px;accent-color:var(--a)}
+.stt{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 10px}
+.stt h2{margin:0;font-size:24px;font-weight:900;letter-spacing:.04em}
+.stt button{padding:9px 12px;font-size:13px;background:linear-gradient(180deg,#a78bfa,#7c3aed);color:#fff}
+.stn{font-size:15px;font-weight:900;padding:4px 14px;border-radius:999px;color:#fff;display:inline-block;margin-bottom:8px}
+.tabs{display:flex;gap:6px;padding-left:12px}
+.tb{padding:9px 18px;border-radius:14px 14px 0 0;font-weight:900;font-size:14px;background:var(--bg2);color:var(--mute);cursor:pointer;border:2px solid var(--line);border-bottom:0}
+.tb.on{background:var(--card);color:var(--fg);box-shadow:0 -3px 0 var(--gold) inset}
+.spanel{background:var(--card);border:2px solid var(--line);border-radius:0 22px 22px 22px;padding:12px;margin-bottom:12px}
+.court{border-radius:18px;padding:14px 6px 10px;background:repeating-linear-gradient(90deg,#f7b267 0 30px,#f2a65a 30px 60px);border:3px solid #fff;box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+.cg{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-areas:"a . b" "c . d" ". e .";row-gap:10px}
+.cg>*:nth-child(1){grid-area:a}.cg>*:nth-child(2){grid-area:b}.cg>*:nth-child(3){grid-area:c}.cg>*:nth-child(4){grid-area:d}.cg>*:nth-child(5){grid-area:e}
+.bline{height:4px;border-radius:4px;background:#fff;margin:12px 4px 6px;opacity:.9}
+.bench{display:flex;justify-content:space-around;padding-top:4px}
+.bt{font-size:11px;font-weight:900;letter-spacing:.16em;color:#fff;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.pc{position:relative;text-align:center;cursor:pointer;width:96px;margin:0 auto}
+.pc[data-k="PG"]{--pk:#2d7bff}.pc[data-k="SG"]{--pk:#22b85a}.pc[data-k="SF"]{--pk:#ff9f1a}.pc[data-k="PF"]{--pk:#ef4444}.pc[data-k="C"]{--pk:#8b5cf6}.pc[data-k^="B"]{--pk:#94a3b8}
+.pc .av{width:78px;height:78px;font-size:24px;margin:0 auto 6px;background:var(--pk);box-shadow:0 0 0 3px #fff,0 0 0 6px var(--pk),0 6px 12px rgba(0,0,0,.25);transition:transform .15s}
+.pc.sel .av{transform:scale(1.1);box-shadow:0 0 0 3px #fff,0 0 0 8px var(--gold),0 8px 16px rgba(0,0,0,.3)}
+.pc.empty .av{background:rgba(255,255,255,.35);border:3px dashed #fff;box-shadow:none;color:#fff}
+.pcn{display:inline-block;max-width:96px;font-size:12px;font-weight:800;background:#fff;color:#2a1d12;border-radius:999px;padding:2px 9px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pck{position:absolute;left:2px;top:-4px;z-index:2;font-size:10px;font-weight:900;color:#fff;background:var(--pk);border-radius:8px;padding:2px 6px;border:2px solid #fff}
+.pcr{position:absolute;right:2px;top:-4px;z-index:2;font-size:13px;font-weight:900;color:#2a1d12;background:var(--gold);border-radius:999px;min-width:28px;padding:1px 5px;border:2px solid #fff}
+.pcx{font-size:11px;font-weight:900;color:#fff;margin-top:2px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.cl{display:grid;gap:8px}
+.ci{display:flex;align-items:center;gap:12px;padding:8px 10px;border-radius:16px;border:2px solid var(--line);background:var(--bg2);cursor:pointer}
+.ci.on{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 22%,var(--card))}
+.ci .av{width:46px;height:46px;font-size:16px;margin:0;flex:none}.ci b{flex:1;font-size:15px}.ci small{color:var(--mute);font-weight:800}
+.sinfo{text-align:center;font-size:12px;color:var(--mute);margin-top:8px;font-weight:700}
+
+</style><script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script></head><body><div id="app"></div>
+<script>
+const RAW=`Shai Gilgeous-Alexander|PG|97|N
+Luka Doncic|PG|96|N
+Stephen Curry|PG|93|N
+Jalen Brunson|PG|96|N
+Cade Cunningham|PG|94|N
+Tyrese Haliburton|PG|90|N
+Magic Johnson|PG|97|L
+Oscar Robertson|PG|96|L
+Isiah Thomas|PG|92|L
+John Stockton|PG|91|L
+Steve Nash|PG|91|L
+Jason Kidd|PG|90|L
+Michael Jordan|SG|99|L
+Kobe Bryant|SG|97|L
+Jerry West|SG|95|L
+Dwyane Wade|SG|94|L
+Allen Iverson|SG|92|L
+Clyde Drexler|SG|91|L
+Ray Allen|SG|88|L
+Anthony Edwards|SG|95|N
+Devin Booker|SG|91|N
+Donovan Mitchell|SG|93|N
+Tyrese Maxey|SG|92|N
+LeBron James|SF|98|L
+Larry Bird|SF|97|L
+Julius Erving|SF|94|L
+Elgin Baylor|SF|94|L
+Scottie Pippen|SF|91|L
+Kevin Durant|SF|93|N
+Jayson Tatum|SF|93|N
+Kawhi Leonard|SF|93|N
+Jaylen Brown|SF|91|N
+Jimmy Butler|SF|85|N
+Paul George|SF|82|N
+Tim Duncan|PF|97|L
+Karl Malone|PF|94|L
+Dirk Nowitzki|PF|94|L
+Kevin Garnett|PF|94|L
+Charles Barkley|PF|92|L
+Dennis Rodman|PF|85|L
+Giannis Antetokounmpo|PF|96|N
+Paolo Banchero|PF|87|N
+Evan Mobley|PF|87|N
+Scottie Barnes|PF|88|N
+Zion Williamson|PF|85|N
+Kareem Abdul-Jabbar|C|98|L
+Wilt Chamberlain|C|98|L
+Shaquille O’Neal|C|97|L
+Hakeem Olajuwon|C|96|L
+Bill Russell|C|94|L
+David Robinson|C|93|L
+Moses Malone|C|92|L
+Patrick Ewing|C|91|L
+Nikola Jokic|C|97|N
+Victor Wembanyama|C|97|N
+Joel Embiid|C|91|N
+Anthony Davis|C|90|N
+Bam Adebayo|C|87|N
+Alperen Sengun|C|87|N
+Chet Holmgren|C|86|N
+Mikal Bridges|SF|84|N
+Jrue Holiday|PG|82|N
+Derrick White|SG|83|N
+Draymond Green|PF|80|N
+Isaiah Hartenstein|C|82|N
+Alex Caruso|SG|81|N
+Brook Lopez|C|79|N
+Gary Trent Jr.|SG|78|N
+Kyle Kuzma|PF|78|N
+Monte Morris|PG|77|N
+Cody Martin|SF|76|N
+Goga Bitadze|C|76|N
+Immanuel Quickley|PG|82|N
+Dennis Schroder|PG|80|N
+Mike Conley|PG|80|N
+Tyus Jones|PG|80|N
+Jalen Suggs|PG|80|N
+Jose Alvarado|PG|78|N
+Kyle Lowry|PG|77|N
+Cole Anthony|PG|77|N
+Delon Wright|PG|76|N
+Markelle Fultz|PG|76|N
+Jalen Williams|SG|85|N
+Desmond Bane|SG|84|N
+Dyson Daniels|SG|81|N
+Anfernee Simons|SG|80|N
+Norman Powell|SG|84|N
+Josh Hart|SG|82|N
+Collin Sexton|SG|80|N
+Malik Monk|SG|80|N
+Luguentz Dort|SG|79|N
+Jordan Poole|SG|79|N
+Brandon Ingram|SF|84|N
+OG Anunoby|SF|88|N
+Franz Wagner|SF|85|N
+DeMar DeRozan|SF|83|N
+Michael Porter Jr.|SF|85|N
+Andrew Wiggins|SF|80|N
+Herb Jones|SF|80|N
+Jerami Grant|SF|80|N
+Khris Middleton|SF|79|N
+Royce O’Neale|SF|78|N
+Jalen Johnson|PF|87|N
+Julius Randle|PF|83|N
+Jaren Jackson Jr.|PF|86|N
+Jabari Smith Jr.|PF|80|N
+Aaron Gordon|PF|83|N
+John Collins|PF|80|N
+Tobias Harris|PF|81|N
+Obi Toppin|PF|78|N
+Rui Hachimura|PF|78|N
+Jeremy Sochan|PF|77|N
+Jarrett Allen|C|85|N
+Ivica Zubac|C|84|N
+Walker Kessler|C|81|N
+Nic Claxton|C|80|N
+Naz Reid|C|82|N
+Jakob Poeltl|C|80|N
+Daniel Gafford|C|79|N
+Al Horford|C|78|N
+Mitchell Robinson|C|78|N
+Clint Capela|C|77|N
+Walt Frazier|PG|90|L
+Gary Payton|PG|90|L
+Bob Cousy|PG|88|L
+Tony Parker|PG|87|L
+Chauncey Billups|PG|86|L
+Penny Hardaway|PG|86|L
+Rajon Rondo|PG|84|L
+Kyrie Irving|PG|87|N
+Damian Lillard|PG|86|N
+De'Aaron Fox|PG|84|N
+Trae Young|PG|87|N
+LaMelo Ball|PG|86|N
+Darius Garland|PG|84|N
+Fred VanVleet|PG|80|N
+Tre Jones|PG|79|N
+Pete Maravich|SG|90|L
+George Gervin|SG|92|L
+Reggie Miller|SG|88|L
+Manu Ginobili|SG|88|L
+Vince Carter|SG|86|L
+Joe Dumars|SG|84|L
+Sidney Moncrief|SG|84|L
+Klay Thompson|SG|80|N
+Jamal Murray|SG|89|N
+Zach LaVine|SG|82|N
+Tyler Herro|SG|85|N
+Bradley Beal|SG|80|N
+Austin Reaves|SG|88|N
+Jalen Green|SG|80|N
+Cam Thomas|SG|80|N
+Rick Barry|SF|90|L
+Paul Pierce|SF|90|L
+Tracy McGrady|SF|91|L
+Dominique Wilkins|SF|89|L
+Carmelo Anthony|SF|88|L
+Grant Hill|SF|88|L
+James Worthy|SF|86|L
+Trey Murphy III|SF|85|N
+Deni Avdija|SF|88|N
+Keegan Murray|SF|80|N
+Cam Johnson|SF|80|N
+Caleb Martin|SF|78|N
+Max Strus|SF|78|N
+Aaron Nesmith|SF|79|N
+Dillon Brooks|SF|82|N
+Kelly Oubre|SF|79|N
+Kevin McHale|PF|90|L
+Elvin Hayes|PF|90|L
+Bob Pettit|PF|91|L
+Chris Webber|PF|89|L
+Pau Gasol|PF|88|L
+Shawn Kemp|PF|88|L
+Amare Stoudemire|PF|86|L
+Dave DeBusschere|PF|86|L
+Horace Grant|PF|82|L
+Domantas Sabonis|PF|85|N
+Lauri Markkanen|PF|86|N
+Kristaps Porzingis|PF|80|N
+Jonathan Kuminga|PF|80|N
+Bobby Portis|PF|79|N
+Santi Aldama|PF|78|N
+Precious Achiuwa|PF|76|N
+Dikembe Mutombo|C|85|L
+Alonzo Mourning|C|86|L
+Bob Lanier|C|87|L
+Willis Reed|C|88|L
+Dwight Howard|C|88|L
+Artis Gilmore|C|87|L
+Bill Walton|C|88|L
+Nate Thurmond|C|88|L
+Yao Ming|C|86|L
+Marc Gasol|C|84|L
+Rudy Gobert|C|84|N
+Karl-Anthony Towns|C|93|N
+Deandre Ayton|C|80|N
+Myles Turner|C|80|N
+Jonas Valanciunas|C|80|N
+Onyeka Okongwu|C|81|N
+Cooper Flagg|SF|87|N
+Dylan Harper|PG|85|N
+VJ Edgecombe|SG|83|N
+Kon Knueppel|SG|84|N
+Ace Bailey|SF|80|N
+Tre Johnson|SG|80|N
+Jeremiah Fears|PG|80|N
+Egor Demin|PG|80|N
+Collin Murray-Boyles|PF|80|N
+Khaman Maluach|C|80|N
+Cedric Coward|SF|80|N
+Noa Essengue|PF|80|N
+Derik Queen|C|80|N
+Carter Bryant|SF|80|N
+Thomas Sorber|C|80|N
+Yang Hansen|C|79|N
+Joan Beringer|C|80|N
+Walter Clayton Jr.|PG|80|N
+Nolan Traore|PG|80|N
+Kasparas Jakucionis|PG|80|N
+Will Riley|SF|78|N
+Drake Powell|SF|78|N
+Asa Newell|PF|79|N
+Nique Clifford|SF|80|N
+Jase Richardson|SG|79|N
+Ben Saraf|SG|77|N
+Danny Wolf|C|79|N
+Hugo Gonzalez|SF|79|N
+Liam McNeeley|SF|78|N
+Yanic Niederhauser|C|76|N
+AJ Dybantsa|SF|80|N
+Darryn Peterson|SG|80|N
+Cameron Boozer|PF|80|N
+Caleb Wilson|PF|80|N
+Darius Acuff Jr.|PG|80|N
+Kingston Flemings|PG|80|N
+Keaton Wagler|PG|80|N
+Mikel Brown Jr.|PG|80|N
+Brayden Burries|SG|80|N
+Morez Johnson Jr.|PF|80|N
+Yaxel Lendeborg|PF|80|N
+Aday Mara|C|80|N
+Nate Ament|SF|80|N
+Hannes Steinbach|PF|80|N
+Dailyn Swain|SF|80|N
+Bennett Stirtz|PG|80|N
+Ebuka Okorie|PG|79|N
+Christian Anderson Jr.|PG|79|N
+Jayden Quaintance|PF|79|N
+Karim Lopez|SF|79|N
+Labaron Philon Jr.|PG|78|N
+Cameron Carr|SG|78|N
+Koa Peat|PF|78|N
+Allen Graves|PF|78|N
+Zuby Ejiofor|PF|77|N
+Tarris Reed Jr.|C|77|N
+Chris Cenac Jr.|PF|77|N
+Sergio De Larrea|PG|76|N
+Joshua Jefferson|PF|76|N
+Alex Karaban|PF|76|N
+CJ McCollum|PG|83|N
+Nickeil Alexander-Walker|SG|83|N
+Payton Pritchard|PG|82|N
+Day’Ron Sharpe|C|77|N
+Coby White|PG|80|N
+Brandon Miller|SF|85|N
+Moussa Diabate|C|77|N
+Josh Giddey|PG|84|N
+Matas Buzelis|SF|81|N
+Jalen Smith|C|77|N
+James Harden|PG|87|N
+Peyton Watson|SF|80|N
+Ausar Thompson|SF|85|N
+Duncan Robinson|SG|78|N
+Jalen Duren|C|85|N
+Andrew Nembhard|PG|80|N
+Pascal Siakam|PF|87|N
+Davion Mitchell|PG|78|N
+Tim Hardaway Jr.|SG|76|N
+Ryan Rollins|PG|79|N
+Jaime Jaquez Jr.|SF|79|N
+Wendell Carter Jr.|C|79|N
+RJ Barrett|SG|82|N
+Kyshawn George|SG|80|N
+Alex Sarr|C|83|N
+Max Christie|SG|79|N
+PJ Washington|PF|80|N
+Dereck Lively II|C|80|N
+Christian Braun|SG|80|N
+Brandin Podziemski|SG|80|N
+Gui Santos|SF|76|N
+Amen Thompson|SG|86|N
+Kris Dunn|PG|77|N
+Derrick Jones Jr.|SF|77|N
+Isaiah Jackson|C|76|N
+Quentin Grimes|SG|80|N
+Sandro Mamukelashvili|PF|76|N
+Ty Jerome|PG|80|N
+Jaylen Wells|SF|79|N
+Zach Edey|C|80|N
+Ayo Dosunmu|SG|81|N
+Jaden McDaniels|SF|85|N
+Dejounte Murray|PG|82|N
+Cason Wallace|SG|81|N
+Miles Bridges|PF|80|N
+Mark Williams|C|79|N
+Ja Morant|PG|84|N
+Toumani Camara|SF|79|N
+Donovan Clingan|C|82|N
+De’Andre Hunter|SF|80|N
+Stephon Castle|SG|87|N
+Devin Vassell|SG|81|N
+Julian Champagnie|SF|77|N
+Keyonte George|PG|84|N
+Jusuf Nurkic|C|79|N
+Scoot Henderson|PG|80|N
+Reed Sheppard|PG|80|N
+Anthony Black|PG|80|N
+Malcolm Brogdon|PG|80|N
+Spencer Dinwiddie|PG|80|N
+Kevin Porter Jr.|PG|80|N
+Terry Rozier|PG|80|N
+Jared McCain|PG|80|N
+Ajay Mitchell|PG|82|N
+Bub Carrington|PG|80|N
+Russell Westbrook|PG|80|N
+Rob Dillingham|PG|80|N
+Isaiah Collier|PG|80|N
+Donte DiVincenzo|SG|80|N
+Jordan Clarkson|SG|80|N
+Isaiah Joe|SG|80|N
+Gradey Dick|SG|80|N
+Dalton Knecht|SG|80|N
+Kentavious Caldwell-Pope|SG|80|N
+Buddy Hield|SG|80|N
+Ochai Agbaji|SG|80|N
+Pat Connaughton|SG|80|N
+Zaccharie Risacher|SF|80|N
+Bilal Coulibaly|SF|80|N
+Ron Holland|SF|80|N
+Cam Whitmore|SF|80|N
+Harrison Barnes|SF|80|N
+Keldon Johnson|SF|80|N
+Tari Eason|SF|80|N
+Naji Marshall|SF|80|N
+Bojan Bogdanovic|SF|80|N
+Dorian Finney-Smith|SF|80|N
+Sam Hauser|SF|80|N
+Brice Sensabaugh|SF|80|N
+Kevin Love|PF|80|N
+Trayce Jackson-Davis|PF|80|N
+Grant Williams|PF|80|N
+Tidjane Salaun|PF|80|N
+Taylor Hendricks|PF|80|N
+Zach Collins|PF|80|N
+Jarace Walker|PF|80|N
+Kyle Filipowski|PF|80|N
+Nikola Vucevic|C|80|N
+Kel’el Ware|C|80|N
+Luke Kornet|C|80|N
+Robert Williams III|C|80|N
+Ryan Kalkbrenner|C|80|N
+Nick Richards|C|80|N
+Kevon Looney|C|80|N
+Jaxson Hayes|C|80|N
+Jaylin Williams|C|80|N
+Chris Paul|PG|91|L
+Tim Hardaway|PG|84|L
+Nate Archibald|PG|86|L
+Lenny Wilkens|PG|84|L
+Dave Bing|PG|84|L
+Kevin Johnson|PG|83|L
+Mark Price|PG|82|L
+Dennis Johnson|PG|82|L
+Earl Monroe|SG|86|L
+Sam Jones|SG|84|L
+Gail Goodrich|SG|83|L
+Hal Greer|SG|82|L
+Mitch Richmond|SG|84|L
+Jo Jo White|SG|82|L
+Joe Johnson|SG|82|L
+John Havlicek|SF|89|L
+Adrian Dantley|SF|88|L
+Alex English|SF|86|L
+Bernard King|SF|86|L
+Chris Mullin|SF|85|L
+Billy Cunningham|SF|85|L
+Paul Arizin|SF|85|L
+Dolph Schayes|PF|87|L
+Bob McAdoo|PF|87|L
+Dan Issel|PF|85|L
+Tom Heinsohn|PF|84|L
+Bailey Howell|PF|83|L
+Chris Bosh|PF|86|L
+Blake Griffin|PF|85|L
+LaMarcus Aldridge|PF|85|L
+Robert Parish|C|88|L
+Dave Cowens|C|87|L
+Wes Unseld|C|86|L
+Ben Wallace|C|86|L
+Vlade Divac|C|83|L
+Jack Sikma|C|84|L
+Stephon Marbury|PG|83|L
+Baron Davis|PG|83|L
+Steve Francis|PG|84|L
+Mike Bibby|PG|81|L
+Sam Cassell|PG|82|L
+Nick Van Exel|PG|81|L
+Mark Jackson|PG|80|L
+Derek Fisher|PG|79|L
+Gilbert Arenas|SG|86|L
+Michael Redd|SG|84|L
+Rip Hamilton|SG|84|L
+Michael Finley|SG|84|L
+Latrell Sprewell|SG|84|L
+Allan Houston|SG|82|L
+Jason Richardson|SG|82|L
+Jamal Crawford|SG|82|L
+Jerry Stackhouse|SG|82|L
+Ron Harper|SG|80|L
+Shawn Marion|SF|86|L
+Glen Rice|SF|84|L
+Peja Stojakovic|SF|84|L
+Metta World Peace|SF|83|L
+Toni Kukoc|SF|82|L
+Richard Jefferson|SF|82|L
+Detlef Schrempf|SF|82|L
+Andrei Kirilenko|SF|82|L
+Tayshaun Prince|SF|80|L
+Elton Brand|PF|86|L
+Larry Johnson|PF|84|L
+Rasheed Wallace|PF|84|L
+Jermaine O’Neal|PF|84|L
+Carlos Boozer|PF|84|L
+Antawn Jamison|PF|84|L
+Lamar Odom|PF|83|L
+Antoine Walker|PF|82|L
+Kenyon Martin|PF|82|L
+Vin Baker|PF|82|L
+Clifford Robinson|PF|82|L
+Robert Horry|PF|80|L
+Arvydas Sabonis|C|84|L
+Zydrunas Ilgauskas|C|82|L
+Tyson Chandler|C|82|L
+Rik Smits|C|80|L
+Mehmet Okur|C|80|L
+Brad Miller|C|80|L`;
+const f=r=>r>=98?r-6:r>=97?90:r>=90?84+Math.round((r-90)*.85):r-6;
+const P=RAW.split('\n').map(l=>{const[n,p,r,t]=l.split('|');return{n,p,r:f(+r),t}});
+const GOATS=new Set(['Michael Jordan','LeBron James','Kobe Bryant','Stephen Curry','Magic Johnson','Shaquille O’Neal','Kareem Abdul-Jabbar','Tim Duncan','Bill Russell','Larry Bird','Wilt Chamberlain','Hakeem Olajuwon']);
+const TIERS=[[Infinity,'GOAT','#862e9c'],[90,'Legend','#b8860b'],[85,'Franchise Player','#c2255c'],[80,'','#2f9e44'],[75,'','#1c7ed6'],[0,'','#76726a']];
+const tier=r=>typeof r==='object'?(GOATS.has(r.n)?TIERS[0]:r.t==='L'?TIERS[1]:TIERS.slice(2).find(x=>r.r>=x[0])):TIERS.find(x=>r>=x[0]);
+const av=p=>`<div class="av" style="background:${tier(p)[2]}">${BLIND?'?':p.n.split(' ').filter(w=>!/^(Jr\.|II|III)$/.test(w)).map(w=>w[0]).slice(0,2).join('')}${BLIND?'':phimg(p)}</div>`;
+const pk=n=>n.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.’']/g,'').toLowerCase().split(/\s+/).filter(w=>!/^(jr|ii|iii|iv)$/.test(w)).join(' ');
+const PID={};`Precious Achiuwa|1630173
+Darius Acuff Jr.|1643411
+Steven Adams|203500
+Bam Adebayo|1628389
+Santi Aldama|1630583
+Nickeil Alexander-Walker|1629638
+Grayson Allen|1628960
+Jarrett Allen|1628386
+Jose Alvarado|1630631
+Nate Ament|1643417
+Christian Anderson|1643515
+Kyle Anderson|203937
+Giannis Antetokounmpo|203507
+OG Anunoby|1628384
+Deni Avdija|1630166
+Deandre Ayton|1629028
+Marvin Bagley III|1628963
+Ace Bailey|1642846
+LaMelo Ball|1630163
+Mo Bamba|1628964
+Paolo Banchero|1631094
+Desmond Bane|1630217
+Dominick Barlow|1631230
+Harrison Barnes|203084
+Scottie Barnes|1630567
+RJ Barrett|1629628
+Bradley Beal|203078
+Joan Beringer|1642866
+Saddiq Bey|1630180
+Goga Bitadze|1629048
+Anthony Black|1641710
+Bogdan Bogdanovic|203992
+Adem Bona|1641737
+Devin Booker|1626164
+Cameron Boozer|1643409
+Mikel Brown Jr.|1643414
+Josh Minott|1631169
+Keon Ellis|1631165
+Danny Wolf|1642874
+Drake Powell|1642962
+Egor Demin|1642856
+Joshua Jefferson|1643538
+Nolan Traore|1642849
+Moritz Wagner|1629021
+Terance Mann|1629611
+Michael Porter Jr.|1629008
+Day'Ron Sharpe|1630549
+Noah Clowney|1641730
+Julius Randle|203944
+Ben Saraf|1642879
+Jayson Tatum|1628369
+Mitchell Robinson|1629011
+Ron Harper Jr.|1631199
+Derrick White|1628401
+Payton Pritchard|1630202
+Chris Cenac Jr.|1643416
+Paul George|202331
+Jordan Walsh|1641775
+Hugo Gonzalez|1642864
+Sam Hauser|1630573
+Mike Conley|201144
+Luka Garza|1630568
+Baylor Scheierman|1631248
+Neemias Queta|1629674
+Devin Carter|1642269
+Max Christie|1631108
+Walter Clayton Jr.|1642383
+Dereck Lively II|1641726
+Naji Marshall|1630230
+Marcus Sasser|1631204
+Jett Howard|1641724
+Zaccharie Risacher|1642258
+Kyrie Irving|202681
+Morez Johnson Jr.|1643516
+Caleb Martin|1628997
+Daniel Gafford|1629655
+PJ Washington|1629023
+Moussa Cisse|1630619
+Cooper Flagg|1642843
+Sergio De Larrea|1643547
+Myles Turner|1626167
+Gary Trent Jr.|1629018
+Kevin Porter Jr.|1629645
+Bobby Portis|1626171
+Gary Harris|203914
+Taurean Prince|1627752
+Ryan Rollins|1631157
+Kyle Kuzma|1628398
+AJ Green|1631260
+Ousmane Dieng|1631172
+Cormac Ryan|1642504
+Christian Braun|1631128
+Cam Whitmore|1641715
+Julian Strawther|1631124
+Tyus Jones|1626145
+DeMar DeRozan|201942
+DaRon Holmes II|1641747
+Spencer Jones|1642461
+Zeke Nnaji|1630192
+Cam Johnson|1629661
+Jamal Murray|1627750
+Aaron Gordon|203932
+Nikola Jokic|203999
+Amen Thompson|1641708
+Julian Phillips|1641763
+Fred VanVleet|1627832
+Kevin Durant|201142
+Jae'Sean Tate|1630256
+Jabari Smith Jr.|1631095
+Reed Sheppard|1642263
+Tari Eason|1631106
+Alperen Sengun|1630578
+Clint Capela|203991
+Marcus Smart|203935
+Keaton Wagler|1643413
+Kobe Sanders|1642920
+Derrick Jones Jr.|1627884
+Brandon Ingram|1627742
+Kris Dunn|1627739
+Gradey Dick|1641711
+Darius Garland|1629636
+Brook Lopez|201572
+Yanic Niederhauser|1642949
+Jordan Miller|1641757
+Isaiah Jackson|1630543
+Cam Christie|1642353
+Rui Hachimura|1629060
+Max Strus|1629622
+Thybulle|1629680
+Matisse Thybulle|1629680
+Quentin Grimes|1629656
+Jaden Hardy|1630702
+Bronny James|1642355
+Collin Sexton|1629012
+Jake LaRavia|1631222
+Walker Kessler|1631117
+Austin Reaves|1630559
+Cameron Carr|1643418
+Sandro Mamukelashvili|1630572
+Kevon Looney|1626172
+Luka Doncic|1629029
+Jaylen Wells|1642377
+Ty Jerome|1629660
+Kentavious Caldwell-Pope|203484
+Javon Small|1642914
+Ja Morant|1629630
+Zach Edey|1641744
+Olivier-Maxence Prosper|1641765
+Taylor Hendricks|1641707
+Cedric Coward|1642907
+Cam Spencer|1642285
+Simone Fontecchio|1631323
+Davion Mitchell|1630558
+Nikola Jovic|1631107
+Nick Richards|1630208
+Pelle Larsson|1641796
+Tim Hardaway Jr.|203501
+Klay Thompson|202691
+Dru Smith|1630696
+Keshad Johnson|1642352
+Andrew Wiggins|203952
+Vladislav Goldin|1642884
+Aaron Wiggins|1630598
+Bojan Bogdanovic|202711
+Jerami Grant|203924
+Khris Middleton|203114
+Tyler Herro|1629639
+Kyle Lowry|200768
+Russell Westbrook|201566
+Terry Rozier|1626179
+Malcolm Brogdon|1627763
+Spencer Dinwiddie|203915
+Kevin Love|201567
+Jonas Valanciunas|202685
+Cody Martin|1628998
+Thomas Sorber|1642850
+Yang Hansen|1642905
+CJ McCollum|203468
+Kingston Flemings|1643412
+Dyson Daniels|1630700
+Dorian Finney-Smith|1627827
+Asa Newell|1642854
+Onyeka Okongwu|1630168
+Zuby Ejiofor|1643544
+Jalen Johnson|1630552
+Corey Kispert|1630557
+Royce O'Neale|1626220
+Naz Reid|1629675
+Grant Williams|1629684
+Coby White|1629632
+Sion James|1642883
+Kon Knueppel|1642851
+Michael Ajayi|1642369
+Ryan Kalkbrenner|1641750
+Moussa Diabate|1631217
+Dennis Schroder|203471
+Hannes Steinbach|1643419
+Brandon Miller|1641706
+Tidjane Salaun|1642275
+Liam McNeeley|1642862
+Gary Payton II|1627780
+Brandin Podziemski|1641764
+Will Richard|1642954
+Moses Moody|1630541
+Kristaps Porzingis|204001
+Jimmy Butler|202710
+Gui Santos|1630611
+Al Horford|201143
+Quinten Post|1642366
+Draymond Green|203110
+Stephen Curry|201939
+Tyrese Haliburton|1630169
+Obi Toppin|1630167
+Andrew Nembhard|1629614
+Jarace Walker|1641716
+Kelly Oubre|1626162
+Johnny Furphy|1642277
+Larry Nance Jr.|1626204
+Aaron Nesmith|1630174
+Ben Sheppard|1641767
+Jay Huff|1630643
+Ivica Zubac|1627826
+Pascal Siakam|1627783
+Donte DiVincenzo|1628978
+Jaden McDaniels|1630183
+Anthony Edwards|1630162
+Jaylen Clark|1641740
+Ayo Dosunmu|1630245
+Jonathan Kuminga|1630228
+Rudy Gobert|203497
+Jeremiah Fears|1642847
+Zion Williamson|1629627
+Herb Jones|1630529
+Jordan Poole|1629673
+Dejounte Murray|1627749
+Karlo Matkovic|1631255
+Yves Missi|1642274
+Derik Queen|1642852
+Bennedict Mathurin|1631097
+Trey Murphy III|1630530
+Jordan Clarkson|203903
+Dalton Knecht|1642261
+Miles McBride|1630540
+Josh Hart|1628404
+Jalen Brunson|1628973
+Mikal Bridges|1628969
+Karl-Anthony Towns|1626157
+Jonathan Isaac|1628371
+Jalen Suggs|1630591
+Franz Wagner|1630532
+Nikola Vucevic|202696
+Jase Richardson|1642859
+Wendell Carter Jr.|1628976
+Dillon Brooks|1628415
+Jalen Green|1630224
+Luke Kennard|1628379
+Khaman Maluach|1642863
+Koa Peat|1643520
+Miles Bridges|1628970
+Mark Williams|1631109
+Malik Monk|1628370
+Zach LaVine|203897
+Domantas Sabonis|1627734
+Keegan Murray|1631099
+De'Andre Hunter|1629631
+Alex Karaban|1642284
+Victor Wembanyama|1641705
+Dylan Harper|1642844
+Keldon Johnson|1629640
+De'Aaron Fox|1628368
+Stephon Castle|1642264
+Luke Kornet|1628436
+Tarris Reed Jr.|1643542
+Carter Bryant|1642868
+Jayden Quaintance|1643519
+Tobias Harris|202699
+Devin Vassell|1630170
+Julian Champagnie|1630577
+Kyle Filipowski|1642271
+Keyonte George|1641718
+Isaiah Collier|1642268
+Jaxson Hayes|1629637
+Ace Bailey|1642846
+Jaren Jackson Jr.|1628991
+Darryn Peterson|1643408
+Lauri Markkanen|1628374
+Brice Sensabaugh|1641729
+Jusuf Nurkic|203994
+Bilal Coulibaly|1641731
+Trae Young|1629027
+Bub Carrington|1642267
+Tre Johnson|1642848
+Kyshawn George|1642273
+Alex Sarr|1642259
+Anthony Davis|203076
+Will Riley|1642860
+Shai Gilgeous-Alexander|1628983
+Jared McCain|1642272
+Luguentz Dort|1629652
+Jaylin Williams|1631119
+Chet Holmgren|1631096
+Jalen Williams|1631114
+Alex Caruso|1627936
+Isaiah Joe|1630198
+Cason Wallace|1641717
+Ajay Mitchell|1642349
+Isaiah Hartenstein|1628392
+Tyrese Maxey|1630178
+Labaron Philon Jr.|1642889
+Anfernee Simons|1629014
+Jaylen Brown|1627759
+VJ Edgecombe|1642845
+Joel Embiid|203954
+LeBron James|2544
+Justin Edwards|1642348
+Noa Essengue|1642855
+Josh Giddey|1630581
+Dailyn Swain|1643517
+Buddy Hield|1627741
+Caleb Wilson|1643410
+Nic Claxton|1629651
+Zach Collins|1628380
+Matas Buzelis|1641824
+Norman Powell|1626181
+Jalen Smith|1630188
+Tre Jones|1630200
+Patrick Williams|1630172
+James Harden|201935
+Evan Mobley|1630596
+Jaylon Tyson|1642281
+Donovan Mitchell|1628378
+Ebuka Okorie|1643536
+Jalen Duren|1631105
+Cade Cunningham|1630595
+Ron Holland|1641842
+Ausar Thompson|1641709
+John Collins|1628381
+Duncan Robinson|1629130
+Damian Lillard|203081
+Scoot Henderson|1630703
+Jrue Holiday|201950
+Donovan Clingan|1642270
+Toumani Camara|1641739
+Robert Williams III|1629057
+Kawhi Leonard|202695
+Immanuel Quickley|1630193
+Jakob Poeltl|1627751
+Allen Graves|1643512
+Collin Murray-Boyles|1642867
+Trayce Jackson-Davis|1631218
+AJ Dybantsa|1643407
+Brayden Burries|1643415
+Aday Mara|1643530
+Bennett Stirtz|1642892
+Yaxel Lendeborg|1642865`.split('\n').forEach(l=>{const i=l.lastIndexOf('|');PID[pk(l.slice(0,i))]=l.slice(i+1)});
+const phid=p=>p&&p.t==='N'?PID[pk(p.n)]:undefined;
+const phurl=id=>`https://cdn.nba.com/headshots/nba/latest/260x190/${id}.png`;
+const phimg=(p,cls)=>{const id=phid(p);return id?`<img${cls?` class="${cls}"`:''} src="${phurl(id)}" alt="" loading="lazy" referrerpolicy="no-referrer"${cls?'':' onload="this.parentNode.style.fontSize=0"'} onerror="this.remove()">`:''};
+const POS=['PG','SG','SF','PF','C'],SLOTS=[...POS,'B1','B2'];
+const FLEX={PG:'SG',SG:'PG',SF:'PF',PF:'SF'};
+const pn=(k,nat)=>k[0]==='B'||k===nat||FLEX[k]===nat?0:3;
+let S,BLIND=false,SHOWST=true;
+try{SHOWST=localStorage.getItem('nbaShowStats')!=='0'}catch(e){}
+function tgStats(v){SHOWST=v;try{localStorage.setItem('nbaShowStats',v?'1':'0')}catch(e){}render()}
+const STATS_RAW=`Magic Johnson:19.5/7.2/11.2;Oscar Robertson:25.7/7.5/9.5;Isiah Thomas:19.2/3.6/9.3;John Stockton:13.1/2.7/10.5;Steve Nash:14.3/3.0/8.5;Jason Kidd:12.6/6.3/8.7;Michael Jordan:30.1/6.2/5.3;Kobe Bryant:25.0/5.2/4.7;Jerry West:27.0/5.8/6.7;Dwyane Wade:22.0/4.7/5.4;Allen Iverson:26.7/3.7/6.2;Clyde Drexler:20.4/6.1/5.6;Ray Allen:18.9/4.1/3.4;LeBron James:27.0/7.5/7.4;Larry Bird:24.3/10.0/6.3;Julius Erving:24.2/8.5/4.2;Elgin Baylor:27.4/13.5/4.3;Scottie Pippen:16.1/6.4/5.2;Tim Duncan:19.0/10.8/3.0;Karl Malone:25.0/10.1/3.6;Dirk Nowitzki:20.7/7.5/2.4;Kevin Garnett:17.8/10.0/3.7;Charles Barkley:22.1/11.7/3.9;Dennis Rodman:7.3/13.1/1.8;Kareem Abdul-Jabbar:24.6/11.2/3.6;Wilt Chamberlain:30.1/22.9/4.4;Shaquille O’Neal:23.7/10.9/2.5;Hakeem Olajuwon:21.8/11.1/2.5;Bill Russell:15.1/22.5/4.3;David Robinson:21.1/10.6/2.5;Moses Malone:20.6/12.2/1.4;Patrick Ewing:21.0/9.8/1.9;Walt Frazier:18.9/5.9/6.1;Gary Payton:16.3/3.9/6.7;Bob Cousy:18.4/5.2/7.5;Tony Parker:15.5/2.7/5.6;Chauncey Billups:15.2/2.9/5.4;Penny Hardaway:15.2/4.5/5.0;Rajon Rondo:9.8/4.5/8.1;Pete Maravich:24.2/4.2/5.4;George Gervin:25.1/5.1/2.6;Reggie Miller:18.2/3.0/3.0;Manu Ginobili:13.3/3.8/3.8;Vince Carter:16.7/4.3/3.1;Joe Dumars:16.1/2.3/4.5;Sidney Moncrief:15.6/4.9/3.9;Rick Barry:24.8/6.7/4.9;Paul Pierce:19.7/5.6/3.5;Tracy McGrady:19.6/5.6/4.4;Dominique Wilkins:24.8/6.7/2.5;Carmelo Anthony:22.5/6.2/2.7;Grant Hill:16.7/6.0/4.1;James Worthy:17.6/5.1/3.0;Kevin McHale:17.9/7.3/1.7;Elvin Hayes:21.0/12.5/1.8;Bob Pettit:26.4/16.2/3.0;Chris Webber:20.7/9.8/4.2;Pau Gasol:17.0/9.2/3.2;Shawn Kemp:14.6/8.4/1.8;Amare Stoudemire:18.9/7.8/1.2;Dave DeBusschere:16.1/11.0/2.9;Horace Grant:11.2/8.1/2.4;Dikembe Mutombo:9.8/10.3/1.0;Alonzo Mourning:17.1/8.5/1.1;Bob Lanier:20.1/10.1/3.1;Willis Reed:18.7/12.9/1.8;Dwight Howard:16.7/11.7/1.4;Artis Gilmore:18.8/12.3/2.0;Bill Walton:13.3/10.5/3.4;Nate Thurmond:15.0/15.0/2.7;Yao Ming:19.0/9.2/1.6;Marc Gasol:14.0/7.8/3.4;Nikola Jokic:21.8/10.7/7.0;Shai Gilgeous-Alexander:22.5/4.7/5.5;Luka Doncic:28.5/8.3/8.2;Stephen Curry:24.7/4.7/6.4;Jalen Brunson:20.8/3.3/5.5;Cade Cunningham:20.5/5.0/7.0;Tyrese Haliburton:17.5/3.8/8.8;Kyrie Irving:23.5/3.9/5.7;Damian Lillard:25.0/4.2/6.7;Trae Young:25.0/3.7/9.3;LaMelo Ball:21.0/5.7/7.8;Giannis Antetokounmpo:23.8/9.7/4.7;Kevin Durant:27.2/7.0/4.4;Jayson Tatum:22.5/7.2/3.7;Kawhi Leonard:19.8/6.1/3.1;Joel Embiid:26.5/10.8/3.7;Anthony Davis:23.3/10.5/2.5;Anthony Edwards:24.0/5.5/4.2;Devin Booker:24.6/4.3/4.9;Donovan Mitchell:24.5/4.4/4.9;Victor Wembanyama:23.0/10.5/3.2;James Harden:24.0/5.6/7.0;Chris Paul:17.7/4.5/9.4;Tim Hardaway:17.7/3.1/8.2;Nate Archibald:18.8/2.4/7.4;Lenny Wilkens:16.5/4.7/6.7;Dave Bing:20.3/3.8/6.0;Kevin Johnson:17.9/3.3/9.1;Mark Price:15.2/2.6/6.7;Dennis Johnson:14.1/3.0/5.0;Earl Monroe:18.8/3.0/3.9;Sam Jones:17.7/4.9/2.5;Gail Goodrich:18.6/3.0/4.7;Hal Greer:19.2/5.0/4.0;Mitch Richmond:21.0/3.9/3.5;Jo Jo White:17.2/4.0/5.1;Joe Johnson:16.1/4.0/4.5;John Havlicek:20.8/6.3/4.8;Adrian Dantley:24.3/5.7/3.0;Alex English:21.5/5.5/3.6;Bernard King:22.5/5.8/3.3;Chris Mullin:18.2/4.1/3.5;Billy Cunningham:21.2/10.4/4.3;Paul Arizin:22.8/8.6/2.3;Dolph Schayes:18.5/12.1/3.1;Bob McAdoo:22.1/9.4/2.3;Dan Issel:22.6/9.1/2.2;Tom Heinsohn:18.6/8.8/2.0;Bailey Howell:17.7/9.9/2.0;Chris Bosh:19.2/8.5/2.0;Blake Griffin:21.6/8.4/4.0;LaMarcus Aldridge:19.5/8.3/1.9;Robert Parish:14.5/9.1/1.5;Dave Cowens:18.2/13.6/3.8;Wes Unseld:10.8/14.0/3.9;Ben Wallace:5.7/9.6/1.3;Vlade Divac:11.8/8.2/3.1;Jack Sikma:15.6/9.8/3.1;Gilbert Arenas:20.7/3.9/5.3;Shawn Marion:15.2/8.7/1.9;Elton Brand:17.1/8.1/1.8;Larry Johnson:16.2/7.5/3.1;Rasheed Wallace:14.4/6.7/2.0;Jermaine O’Neal:13.2/7.6/1.5;Carlos Boozer:14.8/8.2/1.9;Antawn Jamison:18.5/7.5/1.6;Lamar Odom:13.3/8.7/3.7;Peja Stojakovic:17.1/4.4/1.8;Glen Rice:18.3/4.5/2.1;Metta World Peace:13.0/4.5/2.3;Rip Hamilton:17.1/3.4/3.0;Michael Redd:19.0/3.8/1.9;Michael Finley:15.7/4.0/3.0;Latrell Sprewell:18.3/3.9/4.7;Allan Houston:17.3/2.7/2.4;Steve Francis:18.1/5.3/6.1;Baron Davis:16.1/4.2/7.2;Stephon Marbury:19.3/3.5/7.6;Mike Bibby:14.7/3.0/5.5;Sam Cassell:15.7/3.1/5.8;Toni Kukoc:11.6/4.2/3.7;Arvydas Sabonis:12.0/7.8/1.6;Tyson Chandler:8.5/9.8/0.9;Zydrunas Ilgauskas:12.8/7.0/1.0;Robert Horry:7.0/4.8/2.1`;
+const STAT={};STATS_RAW.split(';').forEach(s=>{const[n,v]=s.split(':');STAT[n]=v.split('/').map(Number)});
+const hs=n=>[...n].reduce((a,c)=>(a*31+c.charCodeAt(0))%1000,7)/1000;
+function stat(p){
+  if(p.ps)return p.ps;
+  const d=nsd(p);
+  if(d){const g=genStat(p);return [0,1,2].map(i=>d[i]!=null?d[i]:g[i])}
+  return genStat(p);
+}
+function genStat(p){
+  if(STAT[p.n])return STAT[p.n];
+  const j=hs(p.n),k=hs(p.n+'x'),m=hs(p.n+'y'),F=(p.r-65)/20;
+  const pts=2.2+(p.r-65)*.62+(j-.5)*3,
+   reb={PG:2.5,SG:3,SF:4.5,PF:6.5,C:8}[p.p]*(.7+F*.4)+(k-.5)*1.5,
+   ast={PG:5,SG:3,SF:2.5,PF:2,C:1.5}[p.p]*(.6+F*.6)+(m-.5)*1.2;
+  return [pts,reb,ast].map(x=>Math.max(.5,Math.round(x*10)/10));
+}
+const sl=p=>stat(p).map(x=>x.toFixed(1));
+const GROUPS=`Hawks|CJ McCollum,Nickeil Alexander-Walker,Dyson Daniels,Jalen Johnson,Onyeka Okongwu
+Celtics|Payton Pritchard,Derrick White,Paul George,Jayson Tatum,Mitchell Robinson
+Nets|Mikel Brown Jr.,Egor Demin,Michael Porter Jr.,Julius Randle,Day’Ron Sharpe
+Hornets|Coby White,Kon Knueppel,Brandon Miller,Naz Reid,Moussa Diabate
+Bulls|Josh Giddey,Norman Powell,Matas Buzelis,Caleb Wilson,Nic Claxton,Jalen Smith
+Cavaliers|James Harden,Donovan Mitchell,Peyton Watson,Evan Mobley,Jarrett Allen,Darius Garland
+Pistons|Cade Cunningham,Ausar Thompson,Duncan Robinson,John Collins,Jalen Duren
+Pacers|Tyrese Haliburton,Andrew Nembhard,Aaron Nesmith,Pascal Siakam,Ivica Zubac,Myles Turner
+Heat|Davion Mitchell,Tim Hardaway Jr.,Andrew Wiggins,Giannis Antetokounmpo,Bam Adebayo,Tyler Herro,Jaime Jaquez Jr.
+Bucks|Ryan Rollins,Kyle Kuzma,Giannis Antetokounmpo,Damian Lillard,Brook Lopez,Jrue Holiday
+Knicks|Jalen Brunson,Josh Hart,Mikal Bridges,OG Anunoby,Karl-Anthony Towns
+Magic|Jalen Suggs,Desmond Bane,Franz Wagner,Paolo Banchero,Wendell Carter Jr.
+76ers|Tyrese Maxey,VJ Edgecombe,Jaylen Brown,LeBron James,Joel Embiid
+Raptors|Immanuel Quickley,RJ Barrett,Brandon Ingram,Scottie Barnes,Jakob Poeltl
+Wizards|Trae Young,Kyshawn George,AJ Dybantsa,Anthony Davis,Alex Sarr
+Mavericks|Kyrie Irving,Max Christie,Cooper Flagg,PJ Washington,Dereck Lively II,Luka Doncic
+Nuggets|Jamal Murray,Christian Braun,Cameron Johnson,Aaron Gordon,Nikola Jokic,Michael Porter Jr.
+Warriors|Stephen Curry,Brandin Podziemski,Yaxel Lendeborg,Draymond Green,Kristaps Porzingis,Gui Santos,Jonathan Kuminga
+Rockets|Fred VanVleet,Amen Thompson,Kevin Durant,Jabari Smith Jr.,Alperen Sengun
+Clippers|Darius Garland,Bradley Beal,Kawhi Leonard,Rui Hachimura,Brook Lopez,Kris Dunn,Derrick Jones Jr.,Isaiah Jackson
+Clippers 25|Kawhi Leonard,James Harden,Ivica Zubac,Norman Powell,Paul George
+Lakers|Luka Doncic,Austin Reaves,Quentin Grimes,Sandro Mamukelashvili,Walker Kessler
+Grizzlies|Ty Jerome,Jaylen Wells,Cedric Coward,Cameron Boozer,Zach Edey
+Grizzlies 23|Ja Morant,Desmond Bane,Jaren Jackson Jr.,Dillon Brooks
+Timberwolves|LaMelo Ball,Anthony Edwards,Ayo Dosunmu,Jaden McDaniels,Rudy Gobert,Naz Reid,Karl-Anthony Towns
+Pelicans|Dejounte Murray,Trey Murphy III,Herb Jones,Zion Williamson,Derik Queen
+Thunder|Shai Gilgeous-Alexander,Cason Wallace,Jalen Williams,Chet Holmgren,Isaiah Hartenstein
+Suns|Devin Booker,Jalen Green,Dillon Brooks,Miles Bridges,Mark Williams,Khaman Maluach
+Suns 24|Devin Booker,Kevin Durant,Bradley Beal
+Trail Blazers|Ja Morant,Damian Lillard,Toumani Camara,Deni Avdija,Donovan Clingan
+Kings|Darius Acuff Jr.,Zach LaVine,De’Andre Hunter,Keegan Murray,Domantas Sabonis,De'Aaron Fox,Malik Monk
+Spurs|De'Aaron Fox,Stephon Castle,Devin Vassell,Julian Champagnie,Victor Wembanyama,Dylan Harper
+Jazz|Keyonte George,Darryn Peterson,Lauri Markkanen,Jaren Jackson Jr.,Jusuf Nurkic
+Hawks 23|Trae Young,Dejounte Murray,De’Andre Hunter,Onyeka Okongwu
+Celtics 24|Jayson Tatum,Jaylen Brown,Jrue Holiday,Derrick White,Kristaps Porzingis,Al Horford,Payton Pritchard
+Nuggets 23|Nikola Jokic,Jamal Murray,Aaron Gordon,Michael Porter Jr.,Christian Braun
+Lakers 20|LeBron James,Anthony Davis,Rajon Rondo,Dwight Howard,Kyle Kuzma
+Cavs 16|LeBron James,Kyrie Irving
+Heat Big 3|LeBron James,Dwyane Wade,Ray Allen
+Warriors Dynasty|Stephen Curry,Kevin Durant,Klay Thompson,Draymond Green
+Thunder 12|Kevin Durant,James Harden
+Rockets 18|James Harden,Dwight Howard
+Bulls 90s|Michael Jordan,Scottie Pippen,Dennis Rodman,Horace Grant,Toni Kukoc,Ron Harper
+Showtime Lakers|Magic Johnson,Kareem Abdul-Jabbar,James Worthy
+Bird Celtics|Larry Bird,Kevin McHale,Bill Walton
+Spurs Dynasty|Tim Duncan,David Robinson,Tony Parker,Manu Ginobili,Kawhi Leonard,Dennis Rodman
+Lakers 2000s|Shaquille O’Neal,Kobe Bryant,Horace Grant,Karl Malone,Gary Payton,Pau Gasol
+Heat 06|Dwyane Wade,Shaquille O’Neal,Gary Payton,Alonzo Mourning
+Lakers 12|Kobe Bryant,Dwight Howard,Steve Nash,Pau Gasol
+Suns Nash|Steve Nash,Amare Stoudemire,Grant Hill,Shawn Marion
+Mavs|Dirk Nowitzki,Steve Nash,Jason Kidd
+Big Three Celtics|Kevin Garnett,Paul Pierce,Ray Allen,Rajon Rondo
+Jazz Duo|John Stockton,Karl Malone
+Rockets 96|Hakeem Olajuwon,Clyde Drexler,Charles Barkley
+Bad Boys|Isiah Thomas,Joe Dumars,Dennis Rodman
+Magic 95|Shaquille O’Neal,Penny Hardaway
+Celts 60s|Bill Russell,Bob Cousy
+Lakers 60s|Jerry West,Elgin Baylor,Wilt Chamberlain
+Bucks 71|Oscar Robertson,Kareem Abdul-Jabbar
+Knicks 70|Walt Frazier,Willis Reed,Dave DeBusschere
+Sixers 83|Julius Erving,Moses Malone
+Rockets 80s|Elvin Hayes,Moses Malone
+Nets|Jason Kidd,Vince Carter
+Raptors 99|Vince Carter,Tracy McGrady
+Magic 01|Tracy McGrady,Grant Hill
+Rockets 05|Tracy McGrady,Yao Ming
+Sonics|Gary Payton,Shawn Kemp
+Nuggets 11|Carmelo Anthony,Chauncey Billups
+Knicks 11|Carmelo Anthony,Amare Stoudemire
+Gasol Bros|Pau Gasol,Marc Gasol
+Raptors 19|Kawhi Leonard,Pascal Siakam
+Clippers 19|Kawhi Leonard,Paul George
+Sixers 01|Allen Iverson,Dikembe Mutombo
+Sixers 06|Allen Iverson,Chris Webber
+Pistons 95|Grant Hill,Joe Dumars
+Mavs 2000|Dirk Nowitzki,Michael Finley,Steve Nash
+Lakers Threepeat|Robert Horry,Derek Fisher,Shaquille O’Neal,Kobe Bryant
+Warriors 07|Baron Davis,Jason Richardson
+Celtics Dynasty|Bill Russell,Bob Cousy,John Havlicek,Tom Heinsohn,Sam Jones,Bailey Howell
+Celtics 80s|Larry Bird,Kevin McHale,Robert Parish
+Suns 90s|Kevin Johnson,Charles Barkley
+Bullets|Wes Unseld,Elvin Hayes
+Lob City|Blake Griffin,Chris Paul
+Heat 10|Chris Bosh,Dwyane Wade,LeBron James
+Bucks 76|Dave Cowens,Jo Jo White,John Havlicek
+Pistons 04|Chauncey Billups,Ben Wallace,Rip Hamilton,Rasheed Wallace,Tayshaun Prince
+Kings 00|Chris Webber,Vlade Divac,Peja Stojakovic,Mike Bibby
+Suns Duo|Mitch Richmond,Chris Webber
+Hawks 80s|Dominique Wilkins,Doc Rivers`.trim().split('\n').map(l=>{const[a,b]=l.split('|');return[a,...b.split(',')]});
+const NO3=new Set(['Wilt Chamberlain','Bill Russell','Kareem Abdul-Jabbar','Elgin Baylor','Bob Pettit','Oscar Robertson','Jerry West','Bob Cousy','Walt Frazier','Nate Thurmond','Willis Reed','Elvin Hayes','Bob Lanier','Artis Gilmore','Dave DeBusschere','Shaquille O’Neal','Moses Malone','Bill Walton','John Havlicek','Dolph Schayes','Paul Arizin','Tom Heinsohn','Bailey Howell','Wes Unseld','Nate Archibald','Lenny Wilkens','Dave Bing','Earl Monroe','Sam Jones','Gail Goodrich','Hal Greer','Jo Jo White','Robert Parish','Dave Cowens']);
+const T3={};'Stephen Curry:42.7;Ray Allen:40.0;Reggie Miller:39.5;Steve Nash:42.8;Kyrie Irving:39.1;Kevin Durant:38.4;Dirk Nowitzki:38.0;Manu Ginobili:37.6;Kobe Bryant:32.9;Michael Jordan:32.7;LeBron James:34.8;Larry Bird:37.6;Magic Johnson:30.3;Damian Lillard:37.0;Luka Doncic:35.0;Giannis Antetokounmpo:28.8;Nikola Jokic:35.5;Jayson Tatum:37.5;Devin Booker:36.5;Donovan Mitchell:36.0;Anthony Edwards:36.5;Joel Embiid:34.0;Anthony Davis:29.8;Kawhi Leonard:38.2;Jalen Brunson:37.0;James Harden:36.0;Trae Young:35.4;LaMelo Ball:36.5;Shai Gilgeous-Alexander:35.5;Allen Iverson:31.3;Dwyane Wade:29.3;Paul Pierce:36.8;Vince Carter:37.4;Carmelo Anthony:35.5;Gary Payton:31.8;Chauncey Billups:38.7;Tony Parker:32.0;Jason Kidd:34.9;John Stockton:38.4;Tim Duncan:17.9;Karl Malone:27.4;Charles Barkley:26.6;Scottie Pippen:32.6;Victor Wembanyama:33.0;Tyrese Haliburton:38.5;Cade Cunningham:35.0'.split(';').forEach(s=>{const[n,v]=s.split(':');T3[n]=+v});
+const TYPE_OV={'Nikola Jokic':'Point Center','Victor Wembanyama':'Unicorn','Draymond Green':'Defensive Anchor','Rudy Gobert':'Rim Protector','Dennis Rodman':'Glass Cleaner','Bill Russell':'Rim Protector','Dikembe Mutombo':'Rim Protector','Ben Wallace':'Rim Protector','Shaquille O’Neal':'Paint Bully','Giannis Antetokounmpo':'Paint Bully','LeBron James':'Point Forward','Magic Johnson':'Point Forward','Stephen Curry':'Sharpshooter','Klay Thompson':'Catch & Shoot','Ray Allen':'Sharpshooter','Reggie Miller':'Sharpshooter','Michael Jordan':'Slasher','Kobe Bryant':'Shot Creator','Allen Iverson':'Shot Creator','Kawhi Leonard':'Two-Way Wing','Jimmy Butler':'Two-Way Wing','Wilt Chamberlain':'Paint Bully','Kareem Abdul-Jabbar':'Post Scorer','Hakeem Olajuwon':'Post Scorer','Tim Duncan':'Post Scorer','Joel Embiid':'Post Scorer','Anthony Davis':'Two-Way Big','Larry Bird':'Point Forward','Steve Nash':'Floor General','John Stockton':'Floor General','Mikal Bridges':'3&D','Herb Jones':'3&D','Alex Caruso':'3&D','Dyson Daniels':'3&D'};
+const DEF_OV={'Rudy Gobert':[70,96],'Victor Wembanyama':[80,97],'Draymond Green':[85,82],'Dikembe Mutombo':[55,97],'Ben Wallace':[60,96],'Bill Russell':[65,97],'Hakeem Olajuwon':[75,94],'David Robinson':[70,93],'Anthony Davis':[75,92],'Kawhi Leonard':[93,75],'Michael Jordan':[93,70],'Scottie Pippen':[92,72],'Herb Jones':[93,65],'Alex Caruso':[92,55],'Dyson Daniels':[93,65],'Jrue Holiday':[90,60],'Gary Payton':[95,55],'Tim Duncan':[75,94],'Kevin Garnett':[85,90],'Dennis Rodman':[80,90],'Evan Mobley':[82,92],'Chet Holmgren':[78,92],'Walker Kessler':[60,92],'Mikal Bridges':[90,60],'Jaden McDaniels':[88,65],'Alex Sarr':[70,88],'Ausar Thompson':[90,70],'Amen Thompson':[92,72],'Dereck Lively II':[60,90],'Donovan Clingan':[58,90],'Jarrett Allen':[65,90],'Mitchell Robinson':[55,90],'Bam Adebayo':[85,88],'Shaquille O’Neal':[55,92],'Moses Malone':[55,88],'Alonzo Mourning':[60,93]};
+function defOf(p){
+  if(DEF_OV[p.n])return DEF_OV[p.n];
+  const b=45+(p.r-70)*1.2,j=(hs(p.n+'d')-.5)*10;
+  let dp=b+j,di=b+j*.6;
+  if(p.p==='PG'||p.p==='SG'){dp+=4;di-=8}
+  if(p.p==='PF')di+=4;
+  if(p.p==='C'){di+=10;dp-=8}
+  const A={'3&D':[14,0],'Two-Way Wing':[10,4],'Athletic Wing':[6,2],'Defensive Anchor':[12,12],'Unicorn':[8,14],'Two-Way Big':[4,12],'Rim Protector':[-5,16],'Glass Cleaner':[0,8],'Energy Big':[0,8],'Paint Bully':[-3,6],'Floor General':[-3,-3],'Playmaker':[-2,-2],'Sharpshooter':[-3,-4],'Catch & Shoot':[-2,-4]}[typeOf(p)]||[0,0];
+  return [dp+A[0],di+A[1]].map(x=>Math.max(30,Math.min(99,Math.round(x))));
+}
+function typeOf(p){
+  if(TYPE_OV[p.n])return TYPE_OV[p.n];
+  const[s,r,a]=stat(p),t=p3(p),c=p.p==='C',f=p.p==='PF',g=p.p==='PG';
+  if(c){if(t!=null&&t>=33)return'Stretch Big';if(s>=18)return'Paint Bully';return r>=8?'Rim Protector':'Energy Big'}
+  if(f){if(t!=null&&t>=35)return'Stretch Four';if(s>=17&&r>=8)return'Paint Bully';if(r>=8)return'Glass Cleaner';if(a>=3.5)return'Point Forward';return'Power Forward'}
+  if(g){if(a>=8)return'Floor General';if(s>=22)return'Scoring Guard';if(t!=null&&t>=38)return'Sharpshooter';if(a>=5.5)return'Playmaker';if(t!=null&&t>=35&&s<14)return'3&D';return'Combo Guard'}
+  if(s>=23)return p.p==='SG'?'Shot Creator':'Scoring Wing';
+  if(t!=null&&t>=38)return'Sharpshooter';
+  if(a>=4.5)return p.p==='SG'?'Playmaker':'Point Forward';
+  if(t!=null&&t>=36&&s>=14)return'Catch & Shoot';
+  if(t!=null&&t>=34&&s<14)return'3&D';
+  if(r>=6)return'Athletic Wing';
+  return p.p==='SG'?'Slasher':'Two-Way Wing';
+}
+function p3(p){
+  if(p.pt3!=null)return p.pt3;
+  {const d=nsd(p);if(d&&d[7]!==undefined)return d[7]}
+  if(NO3.has(p.n))return null;
+  if(T3[p.n]!=null)return T3[p.n];
+  const b={PG:35.5,SG:36.5,SF:35,PF:33,C:26}[p.p]+(hs(p.n+'z')-.5)*6+(p.r-80)*.08-(p.t==='L'?4:0);
+  return Math.max(15,Math.min(42,Math.round(b*10)/10));
+}
+const FGO={'Wilt Chamberlain':54.0,'Shaquille O’Neal':58.2,'Stephen Curry':47.2,'Nikola Jokic':56.0,'Michael Jordan':49.7,'LeBron James':50.6,'Kareem Abdul-Jabbar':55.9,'Larry Bird':49.6,'Magic Johnson':52.0,'Kevin Durant':49.7,'Kobe Bryant':44.7,'Allen Iverson':42.5,'Dennis Rodman':52.1,'Ben Wallace':47.3,'Rudy Gobert':64.5,'Giannis Antetokounmpo':55.0};
+const FTO={'Wilt Chamberlain':51.1,'Shaquille O’Neal':52.7,'Stephen Curry':91.0,'Steve Nash':90.4,'Kevin Durant':88.4,'Larry Bird':88.6,'Michael Jordan':83.5,'LeBron James':73.5,'Kobe Bryant':83.7,'Dwight Howard':56.7,'Giannis Antetokounmpo':71.0,'Nikola Jokic':82.5,'Rick Barry':90.0,'Ray Allen':89.4,'Reggie Miller':88.8,'Dennis Rodman':58.4,'Ben Wallace':41.4,'Dikembe Mutombo':68.0,'Moses Malone':76.0,'Magic Johnson':84.8,'Kareem Abdul-Jabbar':72.1,'Bill Russell':56.1,'Rudy Gobert':64.0};
+const cl=(x,a,b)=>Math.max(a,Math.min(b,x)),r1=x=>Math.round(x*10)/10;
+function ex(p){const o=ex0(p),d=nsd(p);if(!d)return o;const v=(i,x)=>d[i]!=null?d[i]:x;return{stl:v(3,o.stl),blk:v(4,o.blk),tov:v(5,o.tov),fg:v(6,o.fg),ft:v(8,o.ft)}}
+function ex0(p){
+  const j=hs(p.n+'f'),k=hs(p.n+'t'),m=hs(p.n+'u'),[s,,a]=stat(p),[dp,di]=defOf(p);
+  const fg=FGO[p.n]??r1(cl({PG:44,SG:45,SF:47,PF:50,C:56}[p.p]+(p.r-80)*.15+(j-.5)*4,38,64));
+  const ft=FTO[p.n]??r1(cl({PG:82,SG:81,SF:79,PF:75,C:68}[p.p]+(p.r-80)*.1+(m-.5)*8,45,95));
+  const stl=r1(cl({PG:1.4,SG:1.2,SF:1,PF:.8,C:.6}[p.p]*dp/60*(.9+k*.2),.2,2.8));
+  const blk=r1(cl({PG:.2,SG:.3,SF:.6,PF:1,C:1.6}[p.p]*di/60*(.9+j*.2),.1,3.2));
+  const tov=r1(cl(.8+s*.07+a*.2,.8,4.5));
+  return{stl,blk,tov,fg,ft};
+}
+function extra(ps,mins,pts,len){
+  const rnd=()=>.7+Math.random()*.6,sc=len/48,E=ps.map(p=>p.ex||ex({n:p.n,p:p.nat,r:p.r0,t:p.t,ps:p.ps})),W=ps.reduce((s,p)=>s+(p.k[0]==='B'?.4:1),0)||1,T=f=>E.reduce((s,e,j)=>s+(ps[j].k[0]==='B'?.4:1)*e[f],0)/W*5.8;
+  const stl=alloc(Math.round(sc*(T('stl')-1.5+Math.random()*3)),E.map((e,j)=>e.stl*mins[j]*rnd())),
+    blk=alloc(Math.round(sc*(T('blk')-1.5+Math.random()*3)),E.map((e,j)=>e.blk*mins[j]*rnd())),
+    tov=alloc(Math.round(sc*(T('tov')-2+Math.random()*4)),E.map((e,j)=>e.tov*mins[j]*rnd()));
+  return ps.map((p,j)=>{
+    let e=E[j],c=p3({n:p.n,p:p.nat,r:p.r0,t:p.t,pt3:p.pt3,ps:p.ps}),pt=pts[j],
+      a3=c==null?0:Math.round(pt*.27*(.6+Math.random()*.8)),
+      m3=c==null?0:Math.min(Math.floor(pt/3),Math.round(a3*c/100*(.7+Math.random()*.6)));
+    const pf=e.ft/100;let fta=Math.round(pt*.2*(.5+Math.random())),ftm=0;
+    for(let n=0;n<fta;n++)if(Math.random()<pf)ftm++;
+    while(3*m3+ftm>pt&&m3>0)m3--;
+    let rest=pt-3*m3;if(ftm>rest)ftm=rest;
+    if((rest-ftm)%2){
+      const up=3*(m3+1)+ftm<=pt,dn=m3>0;
+      if(up&&(!dn||Math.random()<.5)){m3++;a3=Math.max(a3,m3)}
+      else if(dn)m3--;
+      else if(ftm>0)ftm--;
+      else{ftm++;fta=Math.max(fta,ftm)}
+      rest=pt-3*m3;
+    }
+    const fgm=m3+(rest-ftm)/2,fga=Math.max(a3,fgm,Math.round(fgm/(e.fg/100*(.85+Math.random()*.3))));
+    return{a3,m3,fgm,fga,ftm,fta,stl:stl[j],blk:blk[j],tov:tov[j]};
+  });
+}
+function fx(t){
+  const es=SLOTS.map(k=>t.roster[k]&&{w:k[0]==='B'?.4:1,e:t.roster[k].ex}).filter(x=>x&&x.e),W=es.reduce((s,x)=>s+x.w,0)||1;
+  const av=f=>es.reduce((s,x)=>s+x.w*x.e[f],0)/W,sm=f=>av(f)*5.8;
+  return{fg:av('fg'),ft:av('ft'),tov:sm('tov'),stl:sm('stl'),blk:sm('blk')};
+}
+function fxMod(){
+  const F=S.T.map(fx);
+  const off=f=>(f.fg-49)*.15+(f.ft-77)*.04-(f.tov-17)*.2,dfn=f=>(f.stl-6.2)*.25+(f.blk-5.5)*.2;
+  return [0,1].map(i=>off(F[i])-dfn(F[1-i]));
+}
+const fxLine=t=>{if(!Object.values(t.roster).length)return'';const f=fx(t);return `<div class="chem">FG ${f.fg.toFixed(1)}% · FT ${f.ft.toFixed(0)}% · TOV ${f.tov.toFixed(1)} · STL ${f.stl.toFixed(1)} · BLK ${f.blk.toFixed(1)}</div>`};
+const statLine=p=>{const s=sl(p),e=ex(p);return `<div class="stat">${ovrBadge(p)}<b>${s[0]}</b> PTS · <b>${s[1]}</b> REB · <b>${s[2]}</b> AST · <b>${p3(p)==null?'—':p3(p).toFixed(1)+'%'}</b> 3P%<div class="stat2"><b>${e.stl.toFixed(1)}</b> STL · <b>${e.blk.toFixed(1)}</b> BLK · <b>${e.tov.toFixed(1)}</b> TOV</div><div class="stat2"><b>${e.fg.toFixed(1)}%</b> FG · <b>${e.ft.toFixed(1)}%</b> FT</div><div class="typ">${typeOf(p)}</div>${modeTag(p)}</div>`};
+const statLineV=p=>BLIND||SHOWST?statLine(p):`<div class="stat">${ovrBadge(p)}<div class="stat2">📊 Stat line hidden</div><div class="typ">${typeOf(p)}</div></div>`;
+const sh=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const full=t=>Object.keys(t.roster).length>=7;
+const open=t=>7-Object.keys(t.roster).length;
+const maxBid=t=>t.cash;
+const can=(t,p)=>!full(t);
+function alloc(total,w){const s=w.reduce((a,b)=>a+b,0),raw=w.map(x=>x/s*total),f=raw.map(Math.floor);let left=total-f.reduce((a,b)=>a+b,0);raw.map((x,i)=>[x-f[i],i]).sort((a,b)=>b[0]-a[0]).slice(0,left).forEach(([,i])=>f[i]++);return f}
+const CAT={'Floor General':'P','Playmaker':'P','Point Forward':'P','Point Center':'P','Combo Guard':'P','Sharpshooter':'S','Catch & Shoot':'S','Stretch Big':'S','Stretch Four':'S','3&D':'D','Two-Way Wing':'D','Athletic Wing':'D','Unicorn':'D','Defensive Anchor':'D','Two-Way Big':'D','Scoring Guard':'C','Shot Creator':'C','Scoring Wing':'C','Slasher':'C','Post Scorer':'C','Paint Bully':'I','Rim Protector':'I','Glass Cleaner':'I','Energy Big':'I','Power Forward':'I'};
+const FIT=new Set(['PS','PI','CD']);
+const fits=(a,b)=>{const x=CAT[a],y=CAT[b];return !!(x&&y&&(FIT.has(x+y)||FIT.has(y+x)))};
+function chem(t){
+  const have=new Set(Object.values(t.roster).map(e=>e.n)),on=new Set(),lb=[];
+  GROUPS.forEach(([lab,...ns])=>{const m=ns.filter(n=>have.has(n));if(m.length>1){m.forEach(n=>on.add(n));lb.push(lab+' ('+m.length+')')}});
+  const es=Object.values(t.roster),sm=new Set(),sl2=[];
+  for(let i=0;i<es.length;i++)for(let j=i+1;j<es.length;j++)if(fits(es[i].ty,es[j].ty)){sm.add(es[i].n);sm.add(es[j].n);const lab=es[i].ty+' + '+es[j].ty;if(!sl2.includes(lab)&&sl2.length<3)sl2.push(lab)}
+  return{on,lb,sm,sl2};
+}
+const nat=t=>POS.every(k=>t.roster[k]&&t.roster[k].nat===k);
+function fix(t){const c=chem(t),NAT=nat(t),ti=S.T.indexOf(t);for(const k in t.roster){const e=t.roster[k];e.pen=pn(k,e.nat);e.ch=c.on.has(e.n)?3:0;e.r=e.r0-e.pen+e.ch+(c.sm.has(e.n)?2:0)+(S.cap&&S.cap[ti]===e.n?5:0)+(NAT&&k[0]!=='B'?2:0)}}
+function selSlot(i,k){
+  if(ME!==null&&i!==ME)return;
+  const t=S.T[i];
+  if(!SEL){if(t.roster[k])SEL=[i,k];return render()}
+  const [a,b]=SEL;
+  if(a===i&&b!==k){SEL=null;return act('swap',i,b,k)}
+  SEL=(a===i&&b===k)?null:(t.roster[k]?[i,k]:null);render();
+}
+
+let VW=null,TAB='team';
+
+const vw=()=>VW!==null?VW:(ME!==null?ME:0);
+function swView(){VW=1-vw();SEL=null;render()}
+function setTab(t){TAB=t;render()}
+function pcirc(i,k){
+  const r=S.T[i].roster[k],ed=mine(i),sel=SEL&&SEL[0]===i&&SEL[1]===k;
+  const ini=r?r.n.split(' ').filter(w=>!/^(Jr\.|II|III)$/.test(w)).map(w=>w[0]).slice(0,2).join(''):'+';
+  return `<div class="pc${r?'':' empty'}${sel?' sel':''}" data-k="${k}" ${ed?`onclick="selSlot(${i},'${k}')"`:''}><span class="pck">${k}</span>${r?`<span class="pcr">${r.r}</span>`:''}<div class="av">${ini}${r?phimg(r):''}</div><span class="pcn">${r?r.n:'Empty'}</span>${r?`<div class="pcx">${S.cap&&S.cap[i]===r.n?'© ':''}${r.pen?'−'+r.pen+' ':''}${r.ch?'+'+r.ch+' chem':''}</div>`:''}</div>`;
+}
+function settingUI(){
+  const i=vw(),t=S.T[i],o=S.T[1-i],ed=mine(i);fix(t);
+  const court=['PF','C','SF','SG','PG'].map(k=>pcirc(i,k)).join('');
+  const team=`<div class="court"><div class="cg">${court}</div><div class="bline"></div><div class="bt">BENCH</div><div class="bench">${['B1','B2'].map(k=>pcirc(i,k)).join('')}</div></div>
+    <div class="sinfo">${ed?'Tap two players to swap them':'Viewing '+t.name+' (read only)'} · Team rating ${strength(t).toFixed(1)} · 💵 $${t.cash} left</div>${fxLine(t)}`;
+  const cap=`<div class="cl">${SLOTS.filter(k=>t.roster[k]).map(k=>{const e=t.roster[k],on=S.cap&&S.cap[i]===e.n;return `<div class="ci${on?' on':''}" ${ed?`onclick="act('cap',${i},'${k}')"`:''}><div class="av" style="background:#94a3b8">${e.n.split(' ').map(w=>w[0]).slice(0,2).join('')}${phimg(e)}</div><b>${e.n}</b><small>${k} · ${e.r}</small>${on?'<span>© +5</span>':''}</div>`}).join('')}</div><div class="sinfo">${ed?'Tap a player to make him captain (+5 overall)':'Captain of '+t.name+' (read only)'}</div>`;
+  return `<div class="stt"><h2>⚙️ SETTING</h2><button onclick="swView()">⇄ ${o.name}</button></div>
+  <div class="stn" style="background:var(--${i?'b':'a'})">${t.name}${ME===i?' (you)':''}</div>
+  <div class="tabs"><div class="tb${TAB==='team'?' on':''}" onclick="setTab('team')">👕 Team</div><div class="tb${TAB==='cap'?' on':''}" onclick="setTab('cap')">⭐ Captain</div></div>
+  <div class="spanel">${TAB==='cap'?cap:team}</div>`;
+}
+function lineupUI(){
+  const head=`${settingUI()}<div class="card"><div class="tag">Names are revealed. Teammates, past or present, get +3 chemistry. Tap two slots to swap players. Out of position costs rating, and bench players play less. FG%, FT%, turnovers, steals and blocks also affect scoring.</div></div>${tradeUI()}`;
+  const go=`<button class="sold" onclick="act('start','full')">Full simulation</button><button class="sold" onclick="act('start','q')">Quarter by quarter (swap lineups between quarters)</button>`;
+  if(!onl())return head+go;
+  const r=S.rdy,both=r[0]&&r[1];
+  return head+`<div class="msg">${S.T[0].name}: ${r[0]?'ready':'setting lineup'} · ${S.T[1].name}: ${r[1]?'ready':'setting lineup'}</div><button class="sold" onclick="act('rdy')">${r[ME]?'✓ Ready (tap to cancel)':'Ready'}</button>`+(both?(ME===0?go:`<div class="msg">Waiting for the host to start…</div>`):'');
+}
+const rn=()=>Math.sqrt(-2*Math.log(1-Math.random()))*Math.cos(2*Math.PI*Math.random());
+function strength(t){fix(t);const st=POS.map(k=>t.roster[k]).filter(Boolean),bn=['B1','B2'].map(k=>t.roster[k]).filter(Boolean);return (st.reduce((s,x)=>s+x.r,0)+.4*bn.reduce((s,x)=>s+x.r,0))/(5+.4*bn.length)}
+const DW={PG:[1,0],SG:[1,0],SF:[.6,.4],PF:[.3,.7],C:[0,1]};
+function defense(t){let s=0;POS.forEach(k=>{const e=t.roster[k];if(e){const w=DW[k];s+=w[0]*e.dp+w[1]*e.di}else s+=50});return s/5}
+function startQ(){S.qs={q:[[],[]],acc:[{},{}]};S.sim={q:S.qs.q,tot:[0,0]};S.live=true;playQ()}
+function playQ(){
+  const Q=S.qs,len=Q.q[0].length<4?12:5,a=S.T.map(strength),D=S.T.map(defense),M=fxMod();
+  [0,1].forEach(i=>Q.q[i].push(Math.max(8,Math.round((len/12)*(26+(a[i]-80)*.5-(D[1-i]-60)*.15+M[i])+rn()*4*Math.sqrt(len/12)))));
+  [0,1].forEach(i=>{
+    const t=S.T[i],ps=SLOTS.map(k=>t.roster[k]&&{k,pp:k[0]==='B'?t.roster[k].nat:k,...t.roster[k]}).filter(Boolean);
+    if(!ps.length)return;
+    const rnd=()=>.7+Math.random()*.6;
+    const mins=alloc(len*5,ps.map(p=>(p.k[0]==='B'?22*(.8+Math.random()*.4):36*(.9+Math.random()*.2))*(.9+(p.r-75)/100)));
+    const pts=alloc(Q.q[i][Q.q[i].length-1],ps.map((p,j)=>Math.pow(sv(p)[0],1.1)*Math.pow(p.r/80,2)*rnd()*mins[j]));
+    const reb=alloc(Math.round((len/48)*(38+Math.random()*10)),ps.map((p,j)=>(sv(p)[1]+.3)*mins[j]*rnd()));
+    const ast=alloc(Math.round((len/48)*(20+Math.random()*8)),ps.map((p,j)=>(sv(p)[2]+.2)*(p.r/80)*mins[j]*rnd()));
+    const EX=extra(ps,mins,pts,len);
+    ps.forEach((p,j)=>{
+      const e=EX[j];
+      const x=Q.acc[i][p.n]||(Q.acc[i][p.n]={n:p.n,min:0,pts:0,reb:0,ast:0,a3:0,m3:0,stl:0,blk:0,tov:0,fgm:0,fga:0,ftm:0,fta:0});
+      x.k=p.k;x.min+=mins[j];x.pts+=pts[j];x.reb+=reb[j];x.ast+=ast[j];
+      ['a3','m3','stl','blk','tov','fgm','fga','ftm','fta'].forEach(f=>x[f]+=e[f]);
+    });
+  });
+  const tot=Q.q.map(x=>x.reduce((s,v)=>s+v,0));
+  S.sim.tot=tot;
+  S.box=[0,1].map(i=>Object.values(Q.acc[i]).sort((a,b)=>SLOTS.indexOf(a.k)-SLOTS.indexOf(b.k)).map(x=>({n:x.n,k:x.k,min:x.min,pts:x.pts,reb:x.reb,ast:x.ast,t3:x.a3?Math.round(100*x.m3/x.a3)+'%':'—',stl:x.stl,blk:x.blk,tov:x.tov,fg:x.fgm+'-'+x.fga,ft:x.ftm+'-'+x.fta})));
+  S.live=!(Q.q[0].length>=4&&tot[0]!==tot[1]);
+  render();
+}
+function simGame(){S.live=false;
+  S.T.forEach(fix);const D=S.T.map(defense),M=fxMod();const a=S.T.map(t=>{const st=POS.map(k=>t.roster[k]).filter(Boolean),bn=['B1','B2'].map(k=>t.roster[k]).filter(Boolean);return (st.reduce((s,x)=>s+x.r,0)+.4*bn.reduce((s,x)=>s+x.r,0))/(5+.4*bn.length)});
+  const rn=()=>Math.sqrt(-2*Math.log(1-Math.random()))*Math.cos(2*Math.PI*Math.random());
+  const q=[[],[]];
+  const run=(n,len)=>{for(let k=0;k<n;k++)for(let i=0;i<2;i++)q[i].push(Math.max(8,Math.round((len/12)*(26+(a[i]-80)*.5-(D[1-i]-60)*.15+M[i])+rn()*4*Math.sqrt(len/12))))};
+  const tot=()=>q.map(x=>x.reduce((s,v)=>s+v,0));
+  run(4,12);
+  while(tot()[0]===tot()[1])run(1,5);
+  S.sim={q,tot:tot()};
+  S.box=[0,1].map(i=>{
+    const ps=SLOTS.map(k=>S.T[i].roster[k]&&{k,pp:k[0]==='B'?S.T[i].roster[k].nat:k,...S.T[i].roster[k]}).filter(Boolean);
+    const mins=alloc(240+25*(q[0].length-4),ps.map(p=>(p.k[0]==='B'?22*(.8+Math.random()*.4):36*(.9+Math.random()*.2))*(.9+(p.r-75)/100)));
+    if(!ps.length)return [];
+    const rnd=()=>.7+Math.random()*.6;
+    const pts=alloc(tot()[i],ps.map(p=>Math.pow(sv(p)[0],1.1)*Math.pow(p.r/80,2)*rnd()*mins[ps.indexOf(p)]));
+    const reb=alloc(Math.round(38+Math.random()*10),ps.map(p=>(sv(p)[1]+.3)*mins[ps.indexOf(p)]*rnd()));
+    const ast=alloc(Math.round(20+Math.random()*8),ps.map(p=>(sv(p)[2]+.2)*(p.r/80)*mins[ps.indexOf(p)]*rnd()));
+    const EX=extra(ps,mins,pts,48+5*(q[0].length-4));return ps.map((p,j)=>{const e=EX[j];return {n:p.n,k:p.k,min:mins[j],pts:pts[j],reb:reb[j],ast:ast[j],t3:e.a3?Math.round(100*e.m3/e.a3)+'%':'—',stl:e.stl,blk:e.blk,tov:e.tov,fg:e.fgm+'-'+e.fga,ft:e.ftm+'-'+e.fta}});
+  });
+  S.sim.ev=genEvents(q,S.box);S.sim.id=Math.random()+'';
+}
+function init(){SEL=null;BV=null;VW=null;TAB='team';S={T:[{name:cn(TN1)||'Team 1',cash:20,roster:{}},{name:MODE==='bot'?'Bot 🤖':MODE==='local'?(cn(TN2)||'Team 2'):MODE==='host'?(ONAME||'Team 2'):'Team 2',cash:20,roster:{}}],now:sh(pool().filter(p=>p.t==='N')),leg:sh(pool().filter(p=>p.t==='L')),trade:null,trades:0,op:1,cap:[null,null],cur:null,bid:0,lead:null,rdy:[false,false],msg:MODE==='local'?(cn(TN1)||'Team 1')+' and '+(cn(TN2)||'Team 2')+': pass the phone and bid!':MODE==='bot'?'Bid against the bot. Openers alternate; the bot always opens at $1 minimum.':'Online match: bid against your opponent!',over:false};next()}
+function give(i,price){const t=S.T[i],p=S.cur;t.cash-=price;t.roster[p.p]={n:p.n,r:p.r,price};S.msg=`${t.name} won ${p.n} for $${price}`}
+function next(){
+  S.bid=0;S.lead=null;S.cur=null;S.choose=false;S.passed=false;
+  const all=[...S.now,...S.leg];
+  if(S.T.every(full)||!all.length){S.over=true;S.sim=null;if(MODE==='bot')botLineup();return render()}
+  S.op=1-S.op;
+  let op=null;
+  for(const i of [S.op,1-S.op]){if(!full(S.T[i])){op=i;break}}
+  if(op===null){S.over=true;S.sim=null;if(MODE==='bot')botLineup();return render()}
+  S.op=op;
+  if(!S.bag)S.bag=[];let pos;do{if(!S.bag.length)S.bag=sh(POS.slice());pos=S.bag.shift()}while(!all.some(q=>q.p===pos));const pl=all.filter(q=>q.p===pos),TW=[1/1000,1/300,1/25,1/10,1/5,1/15],cnt={},wt=(pl.forEach(q=>{const t=TIERS.indexOf(tier(q));cnt[t]=(cnt[t]||0)+1}),pl.map(q=>{const t=TIERS.indexOf(tier(q));return TW[t]/cnt[t]}));let x=Math.random()*wt.reduce((a,b)=>a+b,0),k=0;
+  while(k<pl.length-1&&(x-=wt[k])>0)k++;
+  const p=pl[k],src=p.t==='L'?S.leg:S.now;src.splice(src.indexOf(p),1);S.cur=p;
+  const e=[0,1].find(i=>full(S.T[i])&&!full(S.T[1-i])&&S.T[1-i].cash===0);
+  if(e!==undefined){S.lead=1-e;S.bid=0;return sold()}
+  render();
+}
+function pickPos(k){
+  const leg=S.leg.filter(p=>p.p===k),now=S.now.filter(p=>p.p===k);
+  const useLeg=leg.length&&(!now.length||Math.random()<.05);
+  const p=(useLeg?leg:now)[0],arr=useLeg?S.leg:S.now;
+  arr.splice(arr.indexOf(p),1);
+  S.cur=p;S.choose=false;S.msg='';render();
+}
+function chooseUI(){
+  const t=S.T[S.op],all=[...S.now,...S.leg];
+  return `<div class="card"><div class="name" style="font-size:20px">${t.name}: pick a position</div><div class="tag">${t.name} then opens the bidding</div></div><div class="row" style="grid-template-columns:repeat(5,1fr)">`+POS.map(k=>`<button class="pk c${S.op}" ${all.some(p=>p.p===k)?'':'disabled'} onclick="pickPos('${k}')">${k}</button>`).join('')+`</div>`;
+}
+function oldNext(){
+  S.bid=0;S.lead=null;let sk=0;
+  while(true){
+    if(S.T.every(full)||!(S.now.length+S.leg.length)){S.over=true;S.cur=null;simGame();break}
+    const p=(S.now.length&&Math.random()>=.05)||!S.leg.length?S.now.shift():S.leg.shift();S.cur=p;
+    const el=[0,1].filter(i=>can(S.T[i],p));
+    if(!el.length)continue;
+    if(el.length===1){if(sk++>2*(S.now.length+S.leg.length)+2){S.op=el[0];break}(p.t==='L'?S.leg:S.now).push(p);continue}S.op=1-S.op;
+    break;
+  }
+  render();
+}
+function capUI(){return [0,1].map(i=>`<div class="card"><div class="lbl" style="text-align:left;color:var(--${i?'b':'a'})">${S.T[i].name} captain (+5 overall)</div><div class="caps">`+SLOTS.filter(k=>S.T[i].roster[k]).map(k=>{const e=S.T[i].roster[k];return `<button class="cp c${i}${S.cap[i]===e.n?' on':''}" ${mine(i)?'':'disabled'} onclick="act('cap',${i},'${k}')">${e.n}</button>`}).join('')+`</div></div>`).join('')}
+function reroll(){
+  if(!S.cur||S.lead!==null||S.place)return render();
+  (S.cur.t==='L'?S.leg:S.now).push(S.cur);
+  S.op=1-S.op;next();
+}
+function passOpen(){
+  if(full(S.T[1-S.op]))return;S.lead=1-S.op;S.bid=0;return sold();
+  
+}
+function quick(i,a){document.getElementById('in'+i).value=a==='all'?maxBid(S.T[i]):S.bid+a;bidIn(i)}
+function bidIn(i){
+  const t=S.T[i],raw=document.getElementById('in'+i).value,v=raw===''?NaN:Math.floor(+raw);
+  if(!(v>S.bid||(S.lead===null&&v>=0))){S.msg=`Bid must be more than $${S.bid}`;return render()}
+  if(v>maxBid(t)){S.msg=`${t.name} can bid at most $${maxBid(t)}`;return render()}
+  act('bid',i,v);
+}
+function sold(){
+  const i=S.lead,free=SLOTS.filter(k=>!S.T[i].roster[k]);
+  S.place={i,price:S.bid};
+  if(free.length===1)return place(free[0]);
+  render();
+}
+function place(k){
+  const {i,price}=S.place,t=S.T[i],p=S.cur,pen=pn(k,p.p);
+  t.cash-=price;t.roster[k]={n:p.n,r0:p.r,t:p.t,r:p.r-pen,price,nat:p.p,pen,st:sl(p).join('/'),ty:typeOf(p),dp:defOf(p)[0],di:defOf(p)[1],ex:ex(p),ps:p.ps,pt3:p.pt3,yr:p.yr};
+  S.msg=`${t.name} won ${BLIND?'the player':p.n} for $${price}`+(pen?` · at ${k}, overall −${pen}`:'');
+  S.place=null;next();
+}
+function placeUI(){
+  const t=S.T[S.place.i],p=S.cur;
+  return `<div class="card"><span class="pos" data-k="${p.p}">${p.p}</span><div class="name">${BLIND?'Mystery player':p.n}</div>${statLineV(p)}<div class="tag">${t.name}: choose his slot. Out of position lowers his overall. Bench slots have no penalty.</div></div><div class="row" style="grid-template-columns:repeat(7,1fr)">`+SLOTS.map(k=>{const pen=pn(k,p.p);return `<button class="pk c${S.place.i}" ${t.roster[k]||!mine(S.place.i)?'disabled':''} onclick="act('place','${k}')">${k}<br><small>${pen?'−'+pen:'✓'}</small></button>`}).join('')+`</div>`;
+}
+function oldSold(){
+  if(S.lead===null){(S.cur.t==='L'?S.leg:S.now).push(S.cur);S.msg=`Skipped ${S.cur.n}`}
+  else give(S.lead,S.bid);
+  next();
+}
+function teamBox(i){
+  const t=S.T[i],C=chem(t),showChem=!BLIND||S.over;
+  const ld=S.cur&&!S.over&&S.lead===i;return `<div class="team t${i}${ld?' lead':''}"><h2>${t.name}${ME===i?' (you)':''}${ld?' 👑':''}</h2><div class="cash">$${t.cash}</div>${ovTeam(t)}`+
+  SLOTS.map(k=>{const r=t.roster[k];return `<div class="slot${SEL&&SEL[0]===i&&SEL[1]===k?' sel':''}" data-k="${k}" onclick="selSlot(${i},'${k}')"><b>${k}</b>${r&&!(BLIND&&!S.over)?phimg(r,'sa'):''}<span>${r?(BLIND&&!S.over?r.nat+' '+r.st:r.n+(r.nat!==k?' ('+r.nat+')':'')):'—'}</span><i>${r?(r.pen?'−'+r.pen+' ':'')+(showChem&&C.on.has(r.n)?'+3 ':'')+(showChem&&C.sm.has(r.n)?'+2 ':'')+(S.cap&&S.cap[i]===r.n?'(C) ':'')+'$'+r.price:''}</i></div>`}).join('')+(showChem&&C.lb.length?`<div class="chem">Chemistry +3: ${C.lb.join(', ')}</div>`:'')+(showChem&&C.sl2.length?`<div class="chem">Style synergy +2: ${C.sl2.join(', ')}</div>`:'')+(nat(t)?`<div class="chem">All natural positions: +2</div>`:'')+fxLine(t)+`</div>`;
+}
+function bidCol(i){
+  const t=S.T[i],p=S.cur,ok=can(t,p)&&S.lead!==i&&(S.lead!==null||S.op===i)&&mine(i);
+  const lbl=!can(t,p)?`Roster full`:S.lead===i?'Highest bidder':S.lead===null&&S.op!==i?'Waiting for opener':`Max $${maxBid(t)}`;
+  return `<div class="col c${i}"><div class="lbl">${t.name} · ${lbl}</div>`+
+  `<input id="in${i}" type="number" inputmode="numeric" min="${S.lead===null?0:S.bid+1}" step="1" placeholder="Min $${S.lead===null?0:S.bid+1}" ${ok?'':'disabled'} onkeydown="if(event.key==='Enter')bidIn(${i})"><button ${ok?'':'disabled'} onclick="bidIn(${i})">Bid</button><button ${ok&&S.bid+1<=maxBid(t)?'':'disabled'} onclick="quick(${i},1)">+$1 (to $${S.bid+1})</button><button ${ok&&maxBid(t)>S.bid?'':'disabled'} onclick="quick(${i},'all')">All in $${maxBid(t)}</button></div>`;
+}
+function render(){
+  if(MODE==='menu'||!S)return;
+  const a=document.getElementById('app');
+  const bidding=!S.place&&!S.choose&&!S.over;
+  let h=`<h1>🏀 NBA Draft Auction</h1>${S.T.every(t=>!Object.keys(t.roster).length)&&S.lead===null&&!S.place?`<div class="tgl"><label><input type="checkbox" ${BLIND?'checked':''} onchange="tgBlind(this.checked)" ${MODE==='guest'?'disabled':''} style="width:auto;padding:0;border:0;margin-right:6px">Blind mode: stats only, names revealed at the end</label></div>`:''}${bidding||(S.over&&!S.sim)?'':`<div class="teams">${teamBox(0)}${teamBox(1)}</div>`}`;
+  if(S.place){h+=placeUI()}else if(S.choose){h+=chooseUI()}else if(S.over&&!S.sim){h+=lineupUI()}else if(animating()){
+    if(!ANIM||ANIM.id!==S.sim.id)startAnim();
+    h+=animUI();
+  }else if(S.over){
+    const sc=S.T.map(t=>Object.values(t.roster).reduce((s,x)=>s+x.r,0));
+    const tt=S.sim.tot,w=tt[0]>tt[1]?0:1,ot=Math.max(0,S.sim.q[0].length-4);
+    h+=`<div class="card"><div class="tag">Money left</div>
+    <div class="row"><div><div class="tag">$${S.T[0].cash} left</div></div>
+    <div><div class="tag">$${S.T[1].cash} left</div></div></div></div>
+    <div class="card"><div class="tag">Simulated game${ot?' · '+(ot>1?ot+'OT':'OT'):''}</div><table class="sb"><tr><th></th>${S.sim.q[0].map((_,i)=>`<th>${i<4?'Q'+(i+1):'OT'+(i>4?i-3:'')}</th>`).join('')}<th>T</th></tr>${[0,1].map(i=>`<tr class="t${i}"><td>${S.T[i].name}</td>${S.sim.q[i].map(v=>`<td>${v}</td>`).join('')}<td><b>${tt[i]}</b></td></tr>`).join('')}</table></div>
+    ${S.live?'':mvpCard()}
+    ${S.box.map((b,i)=>`<div class="card"><div class="lbl" style="text-align:left;color:var(--${i?'b':'a'})">${S.T[i].name}</div><div style="overflow-x:auto"><table class="sb bx"><tr><th></th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>TO</th><th>FG</th><th>3P%</th><th>FT</th></tr>${b.map(p=>`<tr><td>${p.n} <small>${p.k}</small></td><td>${p.min}</td><td><b>${p.pts}</b></td><td>${p.reb}</td><td>${p.ast}</td><td>${p.stl}</td><td>${p.blk}</td><td>${p.tov}</td><td>${p.fg}</td><td>${p.t3}</td><td>${p.ft}</td></tr>`).join('')}</table></div></div>`).join('')}
+    ${S.live?`<div class="msg">Swap players between quarters by tapping two slots above. You can change captains too.</div>${capUI()}`:`<div class="big">${S.T[w].name} wins ${tt[w]}–${tt[1-w]}!</div>`}
+    ${S.live?liveBtn():`<button class="sold" onclick="act('resim')">Change lineups / re-simulate</button><button class="sold" onclick="act('again')">Play again</button><button class="sold" onclick="toMenu()">Main menu</button>`}`;
+  }else{
+    const p=S.cur;
+    h+=`${BLIND?'':`<label class="swt"><input type="checkbox" ${SHOWST?'checked':''} onchange="tgStats(this.checked)"> 📊 Show stat line</label>`}<div class="steps"><span class="st ${S.lead===null?'on':'done'}">① Open the bid</span><span class="st ${S.lead===null?'':'on'}">② Raise or pass</span><span class="st">③ Sold!</span></div><div class="card pcard xl" style="--tc:${tier(p)[2]}"><div class="ribbon">🔨 ON THE BLOCK</div>${av(p)}<span class="pos" data-k="${p.p}">${p.p}</span><div class="name">${BLIND?'Mystery player':p.n}</div>
+    ${tier(p)[1]?`<div class="tier" style="color:${tier(p)[2]}">${tier(p)[1]}</div>`:''}${BLIND?'':`<div class="tag ${p.t}">${p.t==='L'?'Hall of Fame':(ROOK26.has(p.n)?'2026 Draft Class':'NBA Player')}</div>`}${statLineV(p)}
+    
+    <div class="bid">${S.lead===null?`${S.T[S.op].name} must open the bidding`:`${S.T[S.lead].name} leads at <b>$${S.bid}</b>`}</div></div>
+    <div class="bz">${MODE==='bot'?`<div class="turn ${botTurn()?'bt':'yt'}">${botTurn()?'🤖 Bot\'s turn…':'🟢 Your turn: bid or pass'}</div><div class="row" style="grid-template-columns:1fr">${bidCol(ME)}</div>`:`<div class="row">${bidCol(0)}${bidCol(1)}</div>`}
+    ${soldBtn()}</div>
+    <div class="sec">Lineups &amp; money</div><div class="teams big">${teamBox(0)}${teamBox(1)}</div>`;
+  }
+  h+=`<p class="msg">${MODE==='bot'&&botTurn()?'🤖 Bot is thinking…':S.msg}</p>`+(MODE!=='local'||true?`<div class="lv"><a href="#" onclick="if(confirm('Leave this game?'))toMenu();return false">Leave game</a></div>`:'');
+  a.innerHTML=h;botSched();if(animating())animPaint();
+}
+
+// ===== Modes: menu / pass-and-play / bot / online (PeerJS) =====
+let TN1='',TN2='',ONAME='';
+try{TN1=localStorage.getItem('nbaTeam')||''}catch(e){}
+const cn=v=>String(v||'').replace(/[<>&"'`\\]/g,'').replace(/\s+/g,' ').trim().slice(0,16);
+function setTN(v,two){const x=String(v||'').replace(/[<>&"'`\\]/g,'').slice(0,16);if(two)TN2=x;else{TN1=x;try{localStorage.setItem('nbaTeam',cn(x))}catch(e){}}}
+const needName=()=>true;
+let MODE='menu',ME=null,BOT=1,NET=null,SEL=null,LVL='normal',BV=null,botT=null;
+const onl=()=>MODE==='host'||MODE==='guest';
+const mine=i=>ME===null||ME===i;
+function act(n,...a){
+  if(MODE==='guest'){if(NET&&NET.conn&&NET.conn.open)NET.conn.send({t:'act',n,a});return}
+  runAct(n,a,ME);bc();
+}
+function runAct(n,a,who){
+  if(!S)return;
+  const own=i=>who===null||who===i;
+  switch(n){
+    case 'bid':{const i=+a[0];if(!own(i)||S.over||S.place||!S.cur)return;doBid(i,Math.floor(+a[1]));break}
+    case 'pass':if(!S.over&&!S.place&&S.cur&&S.lead===null&&own(S.op))passOpen();break;
+    case 'sold':{if(S.over||S.place||!S.cur||S.lead===null)return;const l=S.lead;if(who===null||who===1-l||(who===l&&full(S.T[1-l])))sold();break}
+    case 'place':{if(!S.place||!own(S.place.i)||!SLOTS.includes(a[0])||S.T[S.place.i].roster[a[0]])return;place(a[0]);break}
+    case 'swap':{const i=+a[0],x=a[1],y=a[2];if(!S.T[i]||!own(i)||!SLOTS.includes(x)||!SLOTS.includes(y)||x===y)return;const t=S.T[i],e=t.roster[x],f=t.roster[y];if(!e)return;delete t.roster[x];delete t.roster[y];t.roster[y]=e;if(f)t.roster[x]=f;fix(t);S.rdy[i]=false;render();break}
+    case 'cap':{const i=+a[0];if(!S.T[i]||!own(i))return;const e=S.T[i].roster[a[1]];if(!e)return;S.cap[i]=S.cap[i]===e.n?null:e.n;S.rdy[i]=false;render();break}
+    case 'rdy':{const w=who===null?ME:who;if(w===null||!S.over||(S.sim&&!S.live))return;S.rdy[w]=!S.rdy[w];if(S.sim&&S.live&&S.rdy[0]&&S.rdy[1]){S.rdy=[false,false];playQ();return}render();break}
+    case 'start':{if(!S.over||S.sim)return;if(onl()&&!(who===0&&S.rdy[0]&&S.rdy[1]))return;S.trade=null;S.rdy=[false,false];if(a[0]==='full'){simGame();render()}else startQ();break}
+    case 'playQ':{if(onl()||!S.sim||!S.live)return;playQ();break}
+    case 'resim':{if(!S.over||!S.sim)return;S.sim=null;S.live=false;S.rdy=[false,false];render();break}
+    case 'tpick':{const i=+a[0];if(S.sim||!S.over||(S.trades||0)>=MAXT||!S.T[i]||!S.T[i].roster[a[1]])return;S.trade=S.trade||{a:null,b:null,ok:[false,false]};S.trade[i?'b':'a']=S.T[i].roster[a[1]].n;S.trade.ok=[false,false];render();break}
+    case 'tok':{const i=+a[0];if(!S.T[i]||!own(i)||S.sim||!S.over||!S.trade||!S.trade.a||!S.trade.b)return;S.trade.ok[i]=!S.trade.ok[i];if(S.trade.ok[0]&&S.trade.ok[1])doTrade();else render();break}
+    case 'tclr':{if(S.sim||!S.over)return;S.trade=null;render();break}
+    case 'again':{init();break}
+  }
+}
+function doBid(i,v){
+  const t=S.T[i];
+  if(!isFinite(v)||v<0||v>maxBid(t)||!can(t,S.cur)||S.lead===i||(S.lead===null&&S.op!==i)||!(v>S.bid||(S.lead===null&&v>=0)))return;
+  S.bid=v;S.lead=i;S.msg=`${t.name} bids $${v}`;render();
+}
+function tgBlind(v){if(MODE==='guest')return;BLIND=v;v?reroll():render();bc()}
+function soldBtn(){
+  const T=S.T,lead=S.lead,op=S.op;
+  if(ME===null)return `<button class="sold" ${lead===null&&full(T[1-op])?'disabled':''} onclick="${lead===null?'passOpen()':'sold()'}">${lead===null?`${T[op].name} passes: ${T[1-op].name} gets him free`:`Sold! ${T[lead].name} gets him for $${S.bid}`}</button>`;
+  if(lead===null){
+    const ok=ME===op&&!full(T[1-op]);
+    return `<button class="sold" ${ok?'':'disabled'} onclick="act('pass')">${ME===op?`Pass: ${T[1-op].name} gets him free`:`Waiting for ${T[op].name} to open…`}</button>`;
+  }
+  const ok=ME===1-lead||(ME===lead&&full(T[1-lead]));
+  return `<button class="sold" ${ok?'':'disabled'} onclick="act('sold')">${ME!==lead?`Pass: ${T[lead].name} gets him for $${S.bid}`:ok?`Sold! You get him for $${S.bid}`:`Waiting for ${T[1-lead].name} to counter or pass…`}</button>`;
+}
+function liveBtn(){
+  const n=S.sim.q[0].length,lab=n<4?'Q'+(n+1):'OT'+(n-3);
+  if(!onl())return `<button class="sold" onclick="act('playQ')">Play ${lab}</button>`;
+  const r=S.rdy;
+  return `<div class="msg">${S.T[0].name}: ${r[0]?'ready':'adjusting'} · ${S.T[1].name}: ${r[1]?'ready':'adjusting'}</div><button class="sold" onclick="act('rdy')">${r[ME]?'✓ Ready for '+lab+' (tap to cancel)':'Ready for '+lab}</button>`;
+}
+
+// ===== MVP =====
+function mvpCard(){
+  if(!S.box||!S.sim||S.live)return '';
+  const tt=S.sim.tot,w=tt[0]>tt[1]?0:1,num=x=>String(x).split('-').map(Number);
+  let best=null,bs=-1e9;
+  (S.box[w]||[]).forEach(p=>{const [fm,fa]=num(p.fg),[tm,ta]=num(p.ft),sc=p.pts+1.2*p.reb+1.5*p.ast+3*(p.stl+p.blk)-2*p.tov-.7*(fa-fm)-.4*(ta-tm);if(sc>bs){bs=sc;best=p}});
+  if(!best)return '';
+  const pl=pool().find(x=>x.n===best.n),ini=best.n.split(' ').filter(x=>!/^(Jr\.|II|III)$/.test(x)).map(x=>x[0]).slice(0,2).join('');
+  return `<div class="card mvp"><div class="tag" style="color:var(--gold);font-weight:800">🏆 Game MVP</div><div class="av" style="background:${pl?tier(pl)[2]:'#76726a'};margin-top:10px">${ini}${pl?phimg(pl):''}</div><div class="name">${best.n}</div><div class="tag" style="color:var(--${w?'b':'a'});font-weight:700">${S.T[w].name} · ${best.k}</div><div class="stat"><b>${best.pts}</b> PTS · <b>${best.reb}</b> REB · <b>${best.ast}</b> AST</div><div class="stat2"><b>${best.stl}</b> STL · <b>${best.blk}</b> BLK · FG ${best.fg} · ${best.min} MIN</div></div>`;
+}
+
+// ===== Bot =====
+const BOT_LVL={easy:{n:.4,a:.8},normal:{n:.18,a:1},hard:{n:.06,a:1.12}};
+const botTrade=()=>!!(S&&S.over&&!S.sim&&S.trade&&S.trade.a&&S.trade.b&&!S.trade.ok[BOT]&&(S.trades||0)<MAXT);
+const botTurn=()=>{if(!S)return false;if(S.over)return botTrade();if(S.place)return S.place.i===BOT;if(!S.cur)return false;if(S.lead===null)return S.op===BOT;if(S.lead===BOT)return full(S.T[1-BOT]);return true};
+function botValue(p){
+  if(BV&&BV.k===p.n)return BV.v;
+  const t=S.T[BOT],n=open(t),L=BOT_LVL[LVL]||BOT_LVL.normal;let v=0;
+  if(n>0){
+    let w=Math.pow(1.2,p.r-80);
+    const es=Object.values(t.roster),have=new Set(es.map(e=>e.n)),ty=typeOf(p);
+    GROUPS.forEach(([,...ns])=>{if(ns.includes(p.n)&&ns.some(x=>x!==p.n&&have.has(x)))w*=1.3});
+    if(es.some(e=>fits(ty,e.ty)))w*=1.1;
+    if(!t.roster[p.p])w*=1.1;
+    const base=t.cash/n,cap=Math.max(0,t.cash-(n-1)*.6);
+    v=Math.round(Math.max(0,Math.min(cap,base*w*L.a*(1+Math.max(-.5,Math.min(.5,rn()*L.n))))));
+  }
+  BV={k:p.n,v};return v;
+}
+function botSlot(p){
+  const t=S.T[BOT],free=SLOTS.filter(k=>!t.roster[k]);
+  return free.find(k=>k===p.p)||free.find(k=>FLEX[k]===p.p)||free.find(k=>k[0]==='B')||free[0];
+}
+function botSched(){if(MODE!=='bot'||botT||!S||(S.over&&!botTrade()))return;botT=setTimeout(()=>{botT=null;botAct()},900)}
+function botAct(){
+  if(MODE!=='bot'||!S)return;
+  if(S.over){if(botTrade())botTradeAct();return}
+  const B=S.T[BOT],H=S.T[1-BOT],p=S.cur;
+  if(S.place){if(S.place.i===BOT)runAct('place',[botSlot(p)],BOT);return}
+  if(!p)return;
+  const v=botValue(p),b=S.bid;
+  if(S.lead===null){if(S.op===BOT)runAct('bid',[BOT,full(H)||B.cash<1?0:Math.min(B.cash,Math.max(1,Math.floor(v*.3)))],BOT);return}
+  if(S.lead===BOT){if(full(H))runAct('sold',[],BOT);return}
+  if(full(B)||B.cash<=b||v<=b){runAct('sold',[],BOT);return}
+  const hm=full(H)?0:H.cash,step=hm<=b+1?1:Math.max(1,Math.round((v-b)*.3));
+  runAct('bid',[BOT,Math.min(b+step,v,B.cash)],BOT);
+}
+function perms(a){if(a.length<2)return[a];const r=[];a.forEach((x,i)=>perms([...a.slice(0,i),...a.slice(i+1)]).forEach(q=>r.push([x,...q])));return r}
+function botLineup(){
+  const t=S.T[BOT],es=Object.values(t.roster);if(!es.length)return;
+  const sl=SLOTS.slice(0,es.length);let best=null,bs=-1e9;
+  perms(es).forEach(pm=>{
+    let sc=0,allNat=true;
+    pm.forEach((e,j)=>{const k=sl[j];if(k[0]==='B')sc+=.4*e.r0;else{sc+=e.r0-pn(k,e.nat);if(e.nat!==k)allNat=false}});
+    if(allNat&&es.length>=5)sc+=10;
+    if(sc>bs){bs=sc;best=pm}
+  });
+  t.roster={};best.forEach((e,j)=>{t.roster[sl[j]]=e});
+  const st=sl.filter(k=>k[0]!=='B').map(k=>t.roster[k]).sort((x,y)=>y.r0-x.r0);
+  S.cap[BOT]=st.length?st[0].n:null;fix(t);
+}
+
+
+
+// ===== Overall on the stat line & in the simulation =====
+const sv=p=>{const a=(p.st||'').split('/').map(Number);return a.length===3&&a.every(isFinite)?a:[10,4,2]};
+const ovrBadge=p=>'';
+function modeTag(p){
+  const cur=p.t==='L'?'Career':srcLabel(p);
+  return `<div class="tag">${cur} stats</div>`;
+}
+const ovTeam=t=>{if(!Object.keys(t.roster).length)return '';const v=strength(t);return ''};
+
+const MAXT=1;
+const pool=()=>P;
+// ===== Player swap (both teams must agree) =====
+const slotOf=(t,n)=>SLOTS.find(k=>t.roster[k]&&t.roster[k].n===n);
+function doTrade(){
+  const T=S.T,tr=S.trade,k0=slotOf(T[0],tr.a),k1=slotOf(T[1],tr.b);
+  if(!k0||!k1){S.trade=null;return render()}
+  const e0=T[0].roster[k0],e1=T[1].roster[k1];
+  T[0].roster[k0]=e1;T[1].roster[k1]=e0;
+  if(S.cap[0]===e0.n)S.cap[0]=null;
+  if(S.cap[1]===e1.n)S.cap[1]=null;
+  S.trades=(S.trades||0)+1;S.trade=null;S.rdy=[false,false];
+  S.msg=`Swap done: ${T[0].name} sends ${e0.n} to ${T[1].name} for ${e1.n}`;
+  T.forEach(fix);render();
+}
+function tradeUI(){
+  if((S.trades||0)>=MAXT)return `<div class="card"><div class="tag">🔁 Swap used. Only one swap per game.</div></div>`;
+  const tr=S.trade;
+  const chips=i=>`<div class="caps">`+SLOTS.filter(k=>S.T[i].roster[k]).map(k=>{const e=S.T[i].roster[k];return `<button class="cp c${i}${tr&&tr[i?'b':'a']===e.n?' on':''}" onclick="act('tpick',${i},'${k}')">${e.n}</button>`}).join('')+`</div>`;
+  let h=`<div class="card"><div class="name" style="font-size:18px">🔁 Swap 1 player</div><div class="tag">Pick one player from each team. Both teams must agree.</div><div class="lbl" style="text-align:left;color:var(--a)">${S.T[0].name} gives</div>${chips(0)}<div class="lbl" style="text-align:left;color:var(--b)">${S.T[1].name} gives</div>${chips(1)}`;
+  if(tr&&tr.a&&tr.b)h+=`<div class="msg">${tr.a} ↔ ${tr.b}</div>`+[0,1].map(i=>`<button class="sold" ${mine(i)?'':'disabled'} onclick="act('tok',${i})">${tr.ok[i]?'✓ ':''}${S.T[i].name} ${tr.ok[i]?'agrees (tap to withdraw)':'agrees?'}</button>`).join('')+`<button class="sold" onclick="act('tclr')">Cancel swap</button>`;
+  return h+`</div>`;
+}
+function botTradeAct(){
+  const tr=S.trade,mn=tr[BOT?'b':'a'],tn=tr[BOT?'a':'b'];
+  const eb=S.T[BOT].roster[slotOf(S.T[BOT],mn)],eh=S.T[1-BOT].roster[slotOf(S.T[1-BOT],tn)];
+  if(!eb||!eh){S.trade=null;return render()}
+  const gain=eh.r0-eb.r0,need={easy:-1,normal:1,hard:2}[LVL]??1;
+  if(gain>=need){tr.ok[BOT]=true;S.msg='🤖 Bot agrees to the swap.';if(tr.ok[1-BOT])doTrade();else render()}
+  else{S.trade=null;S.msg='🤖 Bot declined the swap.';render()}
+}
+
+// ===== Menu & online (PeerJS) =====
+let MM='',MC=null;
+function setLvl(v){LVL=v;menu(MM,MC)}
+function menu(msg,code){
+  MM=msg||'';MC=code||null;
+  const jv=(document.getElementById('jc')||{}).value||'';
+  const L=[['easy','Easy','🟢'],['normal','Normal','🟡'],['hard','Hard','🔴']];
+  document.getElementById('app').innerHTML=`
+  <div class="hero"><div class="ball">🏀</div><h1>NBA Draft Auction</h1><div class="hs">Bid with $20 · fill 7 spots · simulate the game</div></div>
+  <div class="sec">Your team</div>
+  <input id="tn" value="${cn(TN1)}" placeholder="Team name (optional)" maxlength="16" autocomplete="off" oninput="setTN(this.value)">
+  <div class="sec">Choose mode</div>
+  <div class="mc m-local"><div class="mh"><div class="mi">🤝</div><div><div class="mt">Pass the phone</div><div class="md">2 players on one device</div></div><span class="pl">LOCAL</span></div>
+    <input id="tn2" value="${cn(TN2)}" placeholder="Team 2 name (optional)" maxlength="16" autocomplete="off" oninput="setTN(this.value,1)" style="margin-top:12px">
+    <button class="mb" style="margin-top:10px" onclick="startLocal()">Play with a friend</button></div>
+  <div class="mc m-bot"><div class="mh"><div class="mi">🤖</div><div><div class="mt">Play vs Bot</div><div class="md">Solo practice, pick difficulty</div></div><span class="pl">SOLO</span></div>
+    <div class="lvs">${L.map(x=>`<div class="lvc ${LVL===x[0]?'on':''}" onclick="setLvl('${x[0]}')">${x[2]} ${x[1]}</div>`).join('')}</div>
+    <button class="mb" onclick="startBot()">Start vs bot</button></div>
+  <div class="mc m-net"><div class="mh"><div class="mi">🌐</div><div><div class="mt">Play online</div><div class="md">Each on your own phone</div></div><span class="pl">ONLINE</span></div>
+    ${code?`<div class="tag" style="margin-top:12px">Room code. Share it with your opponent.</div><div class="code">${code}</div><div class="tag">Waiting for them to join…</div><button class="mb" onclick="toMenu()">Cancel</button>`:QSR?`<div class="tag" style="margin-top:12px">🔎 Searching for an opponent…</div><div class="tag">Keep this page open. You will be matched automatically.</div><button class="mb" onclick="toMenu()">Cancel search</button>`:`<button class="mb" style="background:linear-gradient(180deg,#3bd983,#18a34a);color:#fff" onclick="quickMatch()">⚡ Quick match</button><div class="or">OR PLAY WITH A FRIEND</div><button class="mb" onclick="hostOnline()">Host a room</button>`}
+    <div class="or">OR JOIN</div>
+    <div class="jr"><input id="jc" value="${jv}" placeholder="CODE" maxlength="5" autocapitalize="characters" autocomplete="off" style="text-transform:uppercase"><button class="mb" onclick="joinOnline()">Join</button></div></div>
+  <div class="mc m-local"><div class="mh"><div class="mi">🏅</div><div><div class="mt">Achievements</div><div class="md">${ACH.filter(a=>AS.un[a[0]]).length} / ${ACH.length} unlocked</div></div><span class="pl">BADGES</span></div>
+    <button class="mb" onclick="showAch()">View badges</button></div>
+  <p class="msg">${msg||''}</p>`;
+}
+function startLocal(){if(!needName(true))return;MODE='local';ME=null;init()}
+function startBot(){if(!needName())return;MODE='bot';ME=0;BOT=1;init()}
+function toMenu(msg){
+  QSR=false;QID=0;
+  clearTimeout(botT);botT=null;clearInterval(animT);animT=null;ANIM=null;
+  const pr=NET&&NET.peer;NET=null;MODE='menu';ME=null;S=null;SEL=null;
+  try{pr&&pr.destroy()}catch(e){}
+  menu(msg||'');
+}
+const lost=()=>{if(MODE!=='menu')toMenu('Connection lost.')};
+function snap(){const {now,leg,bag,qs,...r}=S;return{t:'st',s:r,b:BLIND}}
+function bc(){if(MODE==='host'&&NET&&NET.conn&&NET.conn.open&&S)NET.conn.send(snap())}
+function hostConn(c){
+  if(!NET||NET.conn){try{c.on('open',()=>setTimeout(()=>c.close(),150))}catch(e){}return}
+  NET.conn=c;
+  c.on('open',()=>{QSR=false;MODE='host';ME=0;init();bc()});
+  c.on('data',m=>{if(m&&m.t==='act'&&Array.isArray(m.a)){runAct(m.n,m.a,1);bc()}else if(m&&m.t==='name'){ONAME=cn(m.v)||'Team 2';if(S&&S.T&&S.T[1]){S.T[1].name=ONAME;render()}bc()}});
+  c.on('close',lost);c.on('error',lost);
+}
+function hostOnline(){
+  if(!needName())return;ONAME='';
+  if(typeof Peer==='undefined')return menu('Online play needs an internet connection (PeerJS did not load).');
+  if(NET)toMenu();
+  const code=Array.from({length:5},()=>'ABCDEFGHJKMNPQRSTUVWXYZ23456789'[Math.random()*31|0]).join('');
+  const peer=new Peer('nbaauc-'+code);NET={peer,conn:null};
+  peer.on('open',()=>menu('',code));
+  peer.on('connection',hostConn);
+  peer.on('error',e=>{if(MODE!=='menu')return;if(e.type==='unavailable-id'){toMenu();return hostOnline()}toMenu('Network error: '+(e.type||e))});
+}
+
+// ===== Quick match (auto-pairs two searching players, no code needed) =====
+let QSR=false,QID=0,QMS=0;const QN=8;
+function quickMatch(){
+  if(typeof Peer==='undefined')return menu('Online play needs an internet connection (PeerJS did not load).');
+  if(NET)toMenu();
+  QSR=true;QMS=0;QID=Date.now();menu('');qTry(QID);
+}
+function qFail(m){QSR=false;QID=0;toMenu(m)}
+function qTry(id){
+  if(id!==QID)return;
+  if(QMS>=QN)return qFail('Everyone is busy right now. Try again in a moment.');
+  const slot='nbaauc-q'+QMS,peer=new Peer(slot);NET={peer,conn:null};
+  peer.on('connection',hostConn);
+  peer.on('error',e=>{
+    if(id!==QID||MODE!=='menu')return;
+    if(e.type==='unavailable-id'){try{peer.destroy()}catch(x){}NET=null;qJoin(id,slot)}
+    else qFail('Network error: '+(e.type||e));
+  });
+}
+function qJoin(id,slot){
+  if(id!==QID)return;
+  const peer=new Peer();NET={peer,conn:null};
+  let done=false,got=false,to=null;
+  const next=()=>{if(done||id!==QID)return;done=true;clearTimeout(to);try{peer.destroy()}catch(e){}NET=null;QMS++;qTry(id)};
+  peer.on('open',()=>{
+    const c=peer.connect(slot,{serialization:'json',reliable:true});NET.conn=c;
+    to=setTimeout(()=>{if(!got)next()},6000);
+    c.on('open',()=>{try{c.send({t:'name',v:cn(TN1)})}catch(e){}});
+    c.on('data',m=>{if(m&&m.t==='st'){if(!got){got=true;done=true;clearTimeout(to);QSR=false;QID=0}MODE='guest';ME=1;S=m.s;BLIND=!!m.b;if(SEL&&!(S.T[SEL[0]]&&S.T[SEL[0]].roster[SEL[1]]))SEL=null;render()}});
+    c.on('close',()=>{got?lost():next()});c.on('error',()=>{got?lost():next()});
+  });
+  peer.on('error',e=>{if(id!==QID||got)return;if(e.type==='peer-unavailable')next();else qFail('Network error: '+(e.type||e))});
+}
+function joinOnline(){
+  if(!needName())return;
+  const code=(document.getElementById('jc').value||'').trim().toUpperCase();
+  if(code.length<5)return menu('Enter the 5-character room code.');
+  if(typeof Peer==='undefined')return menu('Online play needs an internet connection (PeerJS did not load).');
+  if(NET)toMenu();
+  menu('Connecting…');
+  const peer=new Peer();NET={peer,conn:null};
+  peer.on('open',()=>{
+    const c=peer.connect('nbaauc-'+code,{serialization:'json',reliable:true});NET.conn=c;
+    const to=setTimeout(()=>{if(!c.open&&MODE==='menu')toMenu('Could not connect. Check the code.')},12000);
+    c.on('open',()=>{clearTimeout(to);try{c.send({t:'name',v:cn(TN1)})}catch(e){}});
+    c.on('data',m=>{if(m&&m.t==='st'){MODE='guest';ME=1;S=m.s;BLIND=!!m.b;if(SEL&&!(S.T[SEL[0]]&&S.T[SEL[0]].roster[SEL[1]]))SEL=null;render()}});
+    c.on('close',lost);c.on('error',lost);
+  });
+  peer.on('error',e=>{if(MODE!=='menu')return;toMenu(e.type==='peer-unavailable'?'No room with that code.':'Network error: '+(e.type||e))});
+}
+
+// ===== 2025-26 real stats (NBA per game; 2026 rookies = college 2025-26) =====
+const ROOK26=new Set(['AJ Dybantsa','Darryn Peterson','Cameron Boozer','Caleb Wilson','Darius Acuff Jr.','Kingston Flemings','Keaton Wagler','Mikel Brown Jr.','Brayden Burries','Morez Johnson Jr.','Yaxel Lendeborg','Aday Mara','Nate Ament','Hannes Steinbach','Dailyn Swain','Bennett Stirtz','Ebuka Okorie','Christian Anderson Jr.','Jayden Quaintance','Karim Lopez','Labaron Philon Jr.','Cameron Carr','Koa Peat','Allen Graves','Zuby Ejiofor','Tarris Reed Jr.','Chris Cenac Jr.','Sergio De Larrea','Joshua Jefferson','Alex Karaban']);
+const nk=n=>n.replace(/’/g,"'");
+const NS={};`Shai Gilgeous-Alexander:31.1/4.3/6.6/1.4/0.8/2.2/55.3/38.6/87.9
+Luka Doncic:33.5/7.7/8.3/1.6/0.5/4.0/47.6/36.6/78.0
+Stephen Curry:26.6/3.6/4.7/1.1/0.4/2.8/46.8/39.3/92.3
+Jalen Brunson:26.0/3.3/6.8/0.8/0.1/2.4/46.7/36.9/84.1
+Cade Cunningham:23.9/5.5/9.9/1.4/0.8/3.7/46.1/34.2/81.2
+Anthony Edwards:28.8/5.0/3.7/1.4/0.8/2.9/48.9/39.9/79.6
+Devin Booker:26.1/3.9/6.0/0.8/0.3/3.1/45.6/33.0/87.3
+Donovan Mitchell:27.9/4.5/5.7/1.5/0.3/2.8/48.3/36.4/86.5
+Tyrese Maxey:28.3/4.1/6.6/1.9/0.8/2.4/46.2/36.7/89.2
+Kevin Durant:26.0/5.5/4.8/0.8/0.9/3.2/52.0/41.3/87.4
+Jayson Tatum:21.8/10.0/5.3/1.4/0.2/2.4/41.1/32.9/82.3
+Kawhi Leonard:27.9/6.4/3.6/1.9/0.4/2.0/50.5/38.7/89.2
+Jaylen Brown:28.7/6.9/5.1/1.0/0.4/3.6/47.7/34.7/79.5
+Jimmy Butler:20.0/5.6/4.9/1.4/0.2/1.6/51.9/37.6/86.4
+Paul George:17.3/5.3/3.6/1.7/0.4/1.7/43.9/39.2/82.0
+Giannis Antetokounmpo:27.6/9.8/5.4/0.9/0.7/3.2/62.4/33.3/65.0
+Paolo Banchero:22.2/8.4/5.2/0.7/0.6/3.1/45.9/30.5/77.5
+Evan Mobley:18.2/9.0/3.6/0.7/1.7/1.9/54.6/29.7/60.6
+Scottie Barnes:18.1/7.5/5.9/1.4/1.5/2.6/50.7/30.4/81.5
+Zion Williamson:21.0/5.7/3.2/1.0/0.5/2.0/60.0/25.0/71.6
+Nikola Jokic:27.7/12.9/10.7/1.4/0.8/3.7/56.9/38.0/83.1
+Victor Wembanyama:25.0/11.5/3.1/1.0/3.1/2.4/51.2/34.9/82.7
+Joel Embiid:26.9/7.7/3.9/0.6/1.2/2.9/48.9/33.3/85.4
+Anthony Davis:20.4/11.1/2.8/1.1/1.7/2.1/50.6/27.0/72.8
+Bam Adebayo:20.1/10.0/3.2/1.2/0.7/1.6/44.2/31.8/77.8
+Alperen Sengun:20.4/8.9/6.2/1.2/1.1/3.2/51.9/30.5/69.1
+Chet Holmgren:17.1/8.9/1.7/0.6/1.9/1.6/55.7/36.2/79.2
+Mikal Bridges:14.4/3.8/3.7/1.3/0.8/1.0/49.0/37.1/82.7
+Jrue Holiday:16.3/4.6/6.1/1.0/0.1/2.8/45.1/37.8/83.8
+Derrick White:16.5/4.4/5.4/1.1/1.3/1.7/39.4/32.7/90.2
+Draymond Green:8.4/5.5/5.5/0.9/0.6/2.7/41.8/32.6/70.2
+Isaiah Hartenstein:9.2/9.4/3.5/1.0/0.8/1.7/62.2/0.0/61.0
+Alex Caruso:6.2/2.8/2.0/1.3/0.3/0.9/42.3/29.3/80.4
+Brook Lopez:8.5/3.6/1.3/0.6/1.2/0.8/42.8/36.0/75.7
+Gary Trent Jr.:8.1/1.0/1.2/0.5/0.0/0.6/38.7/36.0/76.9
+Kyle Kuzma:13.0/4.5/2.7/0.7/0.4/1.7/49.2/34.7/72.6
+Monte Morris:3.0/1.2/1.5/0.2/0.2/0.3/35.0/25.0/50.0
+Cody Martin:1.8/3.5/0.5/1.0/0.5/1.0/20.0/0.0/50.0
+Goga Bitadze:5.9/5.0/1.3/0.6/1.0/0.7/67.6/18.2/71.1
+Immanuel Quickley:16.4/4.0/5.9/1.3/0.1/1.5/44.3/37.4/82.1
+Dennis Schroder:10.8/2.7/4.9/0.8/0.2/1.8/40.5/32.9/83.4
+Mike Conley:4.5/1.7/2.9/0.6/0.3/0.6/33.5/33.7/90.0
+Tyus Jones:3.0/1.1/2.4/0.6/0.0/0.4/34.9/29.2/77.8
+Jalen Suggs:13.8/3.9/5.5/1.8/0.7/2.7/43.5/33.9/85.5
+Jose Alvarado:7.4/2.5/3.4/1.0/0.1/1.1/41.6/35.2/76.1
+Kyle Lowry:1.2/0.6/0.8/0.1/0.1/0.3/16.0/16.0/83.3
+Cole Anthony:6.7/2.0/3.5/0.6/0.3/1.9/42.4/30.6/61.5
+Markelle Fultz:0.8/0.4/1.6/0.0/0.0/0.4/18.2/0.0/?
+Jalen Williams:17.1/4.6/5.5/1.2/0.3/1.9/48.4/29.9/83.7
+Desmond Bane:20.1/4.1/4.1/1.0/0.5/2.0/48.4/39.1/90.8
+Dyson Daniels:11.9/6.8/5.9/2.0/0.4/1.8/51.7/18.8/61.5
+Anfernee Simons:14.3/2.5/2.4/0.5/0.1/1.2/44.0/38.5/89.6
+Norman Powell:21.7/3.5/2.5/1.1/0.2/1.9/47.0/38.0/82.7
+Josh Hart:12.0/7.4/4.8/1.1/0.3/1.9/50.8/41.3/72.0
+Collin Sexton:15.4/2.3/3.3/1.1/0.1/2.1/48.5/40.1/85.5
+Malik Monk:12.5/1.9/3.0/0.6/0.4/1.5/43.8/39.5/87.9
+Luguentz Dort:8.3/3.6/1.2/0.9/0.4/0.8/38.5/34.4/75.9
+Jordan Poole:13.4/2.0/3.1/0.6/0.4/1.8/37.2/33.3/86.0
+Brandon Ingram:21.5/5.6/3.7/0.8/0.7/2.4/47.7/38.2/82.0
+OG Anunoby:16.7/5.2/2.2/1.6/0.7/1.8/48.4/38.6/82.8
+Franz Wagner:20.6/5.2/3.3/0.9/0.3/1.7/48.1/34.5/82.3
+DeMar DeRozan:18.4/2.9/4.1/1.0/0.3/1.2/49.7/32.0/86.8
+Michael Porter Jr.:24.2/7.1/3.0/1.1/0.3/2.3/46.3/36.3/85.9
+Andrew Wiggins:15.4/4.8/2.7/1.1/1.0/1.5/47.5/41.4/78.4
+Herb Jones:8.9/3.4/2.8/1.6/0.5/1.3/38.3/30.9/80.6
+Jerami Grant:18.6/3.5/2.1/0.7/0.6/2.1/45.3/38.9/81.4
+Khris Middleton:10.2/3.7/2.8/0.7/0.1/1.7/42.0/36.0/87.5
+Royce O'Neale:9.8/4.8/2.7/1.1/0.4/1.3/42.1/40.8/71.1
+Jalen Johnson:22.5/10.3/7.9/1.2/0.4/3.4/48.9/35.2/78.8
+Julius Randle:21.1/6.7/5.0/1.1/0.2/2.7/48.1/31.5/80.2
+Jaren Jackson Jr.:19.4/5.7/2.0/1.1/1.4/2.2/47.6/35.7/80.3
+Jabari Smith Jr.:15.8/6.9/1.9/0.7/0.9/1.4/45.0/36.3/77.5
+Aaron Gordon:16.2/5.8/2.7/0.6/0.3/1.1/49.7/38.9/76.7
+John Collins:13.6/5.3/1.0/0.9/0.7/1.4/55.2/40.6/76.6
+Tobias Harris:13.3/5.1/2.5/0.9/0.4/1.0/46.9/36.8/86.6
+Obi Toppin:11.6/4.4/2.3/0.5/0.0/1.2/50.3/35.2/91.3
+Rui Hachimura:11.5/3.3/0.8/0.6/0.3/0.6/51.4/44.3/69.4
+Jeremy Sochan:3.6/2.4/0.9/0.4/0.2/0.5/49.6/24.4/73.1
+Jarrett Allen:15.4/8.5/1.8/1.0/0.8/1.3/63.8/10.0/70.9
+Ivica Zubac:14.1/10.6/2.2/0.4/0.8/1.8/59.8/-/71.1
+Walker Kessler:14.4/10.8/3.0/1.4/1.8/3.2/70.3/75.0/70.0
+Nic Claxton:11.7/6.9/3.7/0.7/1.1/1.4/57.1/15.8/61.6
+Naz Reid:13.6/6.2/2.2/1.0/1.0/1.6/45.6/36.2/73.2
+Jakob Poeltl:10.7/7.0/2.0/0.9/0.7/1.2/70.0/-/60.2
+Daniel Gafford:9.5/6.9/1.1/0.8/1.3/1.1/65.5/-/68.3
+Al Horford:8.3/4.9/2.6/0.7/1.1/0.9/42.6/36.1/84.6
+Mitchell Robinson:5.7/8.8/0.9/0.9/1.2/0.7/72.3/-/40.8
+Clint Capela:3.8/4.6/0.5/0.5/0.8/1.0/52.0/50.0/57.7
+De'Aaron Fox:18.6/3.8/6.2/1.2/0.3/2.3/48.6/33.2/76.0
+Trae Young:17.9/2.0/8.0/0.9/0.1/2.6/45.8/33.8/82.5
+LaMelo Ball:20.1/4.8/7.1/1.2/0.2/2.8/40.7/36.8/89.9
+Darius Garland:18.8/2.4/6.7/1.0/0.2/2.9/46.0/39.6/86.1
+Tre Jones:14.1/3.1/5.4/1.2/0.2/1.4/55.3/31.5/84.1
+Klay Thompson:11.7/2.1/1.4/0.5/0.3/0.9/39.3/38.3/76.6
+Jamal Murray:25.4/4.4/7.1/0.9/0.4/2.3/48.3/43.5/88.7
+Zach LaVine:19.2/2.8/2.3/0.7/0.3/1.9/47.9/39.0/88.0
+Tyler Herro:20.5/4.8/4.1/0.7/0.4/1.9/48.0/37.8/91.7
+Bradley Beal:8.2/0.8/1.7/0.5/0.0/1.5/37.5/36.8/75.0
+Austin Reaves:23.3/4.7/5.5/1.1/0.4/3.0/49.0/36.0/87.1
+Jalen Green:17.8/3.6/2.8/1.1/0.3/2.3/42.2/31.3/74.7
+Cam Thomas:13.5/1.7/2.6/0.2/0.1/1.8/41.0/31.0/81.1
+Trey Murphy III:21.5/5.7/3.8/1.5/0.4/1.8/47.0/37.9/88.6
+Deni Avdija:24.2/6.9/6.7/0.8/0.6/3.8/46.2/31.8/80.2
+Keegan Murray:14.0/5.7/1.7/1.0/1.6/1.2/42.0/27.7/77.6
+Cam Johnson:12.2/3.8/2.4/0.7/0.4/0.9/48.0/43.0/83.9
+Caleb Martin:3.9/2.5/1.4/0.7/0.3/0.7/45.0/35.1/60.7
+Max Strus:11.2/5.4/2.0/0.3/0.0/0.8/44.3/40.2/77.8
+Aaron Nesmith:13.8/4.2/1.9/0.6/0.5/1.4/41.4/37.9/82.9
+Dillon Brooks:20.2/3.6/1.8/1.0/0.2/1.8/43.5/34.4/84.2
+Kelly Oubre:14.1/5.0/1.6/1.4/0.5/1.4/46.7/36.0/76.6
+Lauri Markkanen:26.7/6.9/2.1/1.0/0.5/1.5/47.7/35.5/89.6
+Kristaps Porzingis:16.7/5.2/2.5/0.6/1.2/1.3/44.6/33.8/84.2
+Bobby Portis:13.7/6.4/1.6/0.6/0.2/1.0/48.8/45.6/70.6
+Santi Aldama:14.0/6.7/2.9/0.9/0.7/1.3/47.9/35.0/66.7
+Precious Achiuwa:10.1/6.7/1.4/0.9/0.7/0.9/52.8/27.8/55.4
+Jonathan Kuminga:12.2/5.6/2.3/0.6/0.3/1.9/46.3/33.3/72.4
+Rudy Gobert:10.9/11.5/1.7/0.8/1.6/1.4/68.2/0.0/52.6
+Karl-Anthony Towns:20.1/11.9/3.0/0.9/0.5/2.5/50.1/36.8/85.8
+Deandre Ayton:12.5/8.0/0.8/0.6/1.0/1.2/67.1/-/64.5
+Myles Turner:11.9/5.3/1.5/0.7/1.6/1.2/44.0/38.3/74.0
+Jonas Valanciunas:8.7/5.1/1.2/0.2/0.6/1.1/58.2/30.8/77.2
+Onyeka Okongwu:15.2/7.6/3.1/1.1/1.1/1.7/48.0/37.6/75.7
+Domantas Sabonis:15.8/11.4/4.1/0.9/0.2/2.7/54.3/18.5/72.7
+Ausar Thompson:9.9/5.7/3.1/2.0/0.9/1.5/52.5/25.0/57.1
+Amen Thompson:18.3/7.8/5.3/1.5/0.6/2.4/53.4/21.6/77.9
+Cooper Flagg:21.0/6.7/4.5/1.2/0.9/2.3/46.8/29.5/82.7
+Dylan Harper:11.8/3.4/3.9/0.8/0.3/1.4/50.5/34.3/75.6
+VJ Edgecombe:16.0/5.6/4.2/1.4/0.5/1.8/43.8/35.4/81.8
+Kon Knueppel:18.5/5.3/3.4/0.7/0.2/2.0/47.5/42.5/86.3
+Ace Bailey:13.8/4.2/1.8/0.8/0.7/1.5/44.3/34.4/75.0
+Tre Johnson:12.2/2.8/2.0/0.6/0.3/1.6/41.9/35.8/87.4
+Jeremiah Fears:14.3/3.7/3.4/1.2/0.4/2.2/43.4/33.0/78.9
+Egor Demin:10.3/3.2/3.3/0.8/0.3/1.7/39.9/38.5/83.1
+Collin Murray-Boyles:8.5/5.0/1.9/0.9/0.9/1.0/57.9/34.0/65.7
+Khaman Maluach:3.0/2.9/0.1/0.1/0.7/0.5/53.3/23.8/71.0
+Cedric Coward:13.6/5.9/2.8/0.6/0.4/1.7/47.1/33.8/84.3
+Derik Queen:11.7/7.1/3.7/1.0/0.9/2.3/47.3/26.1/79.5
+Carter Bryant:4.2/2.5/0.7/0.2/0.3/0.5/40.8/33.5/71.4
+Yang Hansen:2.2/1.5/0.5/0.1/0.2/0.7/31.0/11.9/82.4
+Joan Beringer:3.9/2.3/0.3/0.2/0.7/0.3/66.3/-/70.3
+Walter Clayton Jr.:7.8/2.0/4.0/0.6/0.3/1.7/38.4/30.7/90.1
+Nolan Traore:8.9/1.8/3.8/0.8/0.4/2.3/38.0/31.8/78.7
+Kasparas Jakucionis:6.2/2.6/2.6/0.6/0.1/0.9/42.9/42.3/87.9
+Will Riley:10.3/2.9/2.0/0.7/0.1/1.3/43.9/31.6/80.0
+Drake Powell:6.5/1.8/1.4/0.6/0.2/1.0/40.2/28.0/89.6
+Asa Newell:5.2/2.2/0.6/0.4/0.3/0.5/53.8/38.7/55.2
+Nique Clifford:8.6/3.8/2.4/0.9/0.3/1.5/41.8/33.3/72.2
+Jase Richardson:4.4/1.2/1.1/0.4/0.0/0.5/47.3/35.4/71.7
+Ben Saraf:7.5/2.1/3.3/0.9/0.2/2.3/39.6/21.1/83.0
+Danny Wolf:8.9/4.9/2.2/0.5/0.6/1.3/40.5/32.2/77.1
+Hugo Gonzalez:3.9/3.3/0.5/0.6/0.3/0.5/47.6/36.2/50.0
+Liam McNeeley:4.3/2.4/0.8/0.2/0.1/0.4/40.0/40.0/82.1
+Yanic Niederhauser:4.3/2.9/0.3/0.1/0.7/0.6/64.0/20.0/75.8
+CJ McCollum:18.7/3.3/3.9/0.8/0.5/1.8/45.5/37.5/77.2
+Nickeil Alexander-Walker:20.8/3.4/3.7/1.3/0.5/2.1/45.9/39.9/90.2
+Payton Pritchard:17.0/3.9/5.2/0.7/0.1/1.4/46.4/37.7/89.0
+Day'Ron Sharpe:8.7/6.7/2.3/1.1/0.4/1.7/60.1/23.1/67.8
+Coby White:17.4/3.4/4.0/0.5/0.1/2.6/44.6/36.2/81.7
+Brandon Miller:20.2/4.9/3.3/1.0/0.7/2.5/43.5/38.3/89.2
+Moussa Diabate:7.9/8.7/1.9/0.8/1.0/1.0/63.1/50.0/65.9
+Josh Giddey:17.0/8.3/9.1/1.0/0.5/3.6/44.8/36.4/76.3
+Matas Buzelis:16.3/5.8/2.1/0.7/1.5/2.1/46.3/34.9/78.6
+Jalen Smith:10.2/6.7/1.2/0.5/0.8/1.0/48.3/37.3/74.2
+James Harden:23.6/4.8/8.0/1.1/0.4/3.5/43.4/37.5/88.4
+Peyton Watson:14.6/4.9/2.1/0.9/1.1/1.7/49.1/41.1/73.0
+Duncan Robinson:12.2/2.7/2.1/0.6/0.3/0.7/45.6/41.0/75.5
+Jalen Duren:19.5/10.5/2.0/0.8/0.8/1.9/65.0/-/74.7
+Andrew Nembhard:16.9/2.8/7.7/0.9/0.1/2.4/44.2/36.1/82.5
+Pascal Siakam:24.0/6.6/3.8/1.1/0.4/2.2/48.4/35.8/69.3
+Davion Mitchell:9.3/2.7/6.5/1.0/0.2/1.5/49.0/39.5/64.6
+Tim Hardaway Jr.:13.5/2.6/1.4/0.5/0.1/0.5/44.7/40.7/81.1
+Ryan Rollins:17.3/4.6/5.6/1.5/0.4/2.7/47.2/40.6/79.6
+Jaime Jaquez Jr.:15.4/5.0/4.7/0.7/0.3/2.0/50.7/31.7/76.9
+Wendell Carter Jr.:11.8/7.4/2.0/0.8/0.6/1.3/51.2/31.9/79.2
+RJ Barrett:19.3/5.3/3.3/0.7/0.3/1.7/49.1/33.9/71.7
+Kyshawn George:14.8/5.1/4.5/1.0/0.9/2.6/43.8/38.1/80.2
+Alex Sarr:16.3/7.4/2.7/0.8/2.0/1.7/48.2/33.3/69.2
+Max Christie:12.3/3.2/2.0/0.6/0.4/1.2/44.1/40.4/89.9
+Christian Braun:12.0/4.8/2.7/0.7/0.3/1.0/51.9/30.1/78.2
+Brandin Podziemski:13.8/5.1/3.7/1.1/0.2/1.6/45.5/37.1/79.7
+Gui Santos:9.2/3.9/2.3/0.9/0.3/1.5/50.0/35.1/72.5
+Kris Dunn:7.3/3.3/3.6/1.6/0.2/1.4/47.6/37.4/76.5
+Derrick Jones Jr.:10.1/3.5/1.4/0.9/1.0/0.8/49.9/35.9/76.3
+Isaiah Jackson:6.7/5.3/0.9/0.7/0.9/1.1/63.7/0.0/64.8
+Quentin Grimes:13.4/3.6/3.3/0.9/0.4/1.8/45.0/33.4/84.0
+Sandro Mamukelashvili:11.2/4.9/1.9/0.8/0.5/0.8/52.3/38.9/74.7
+Ty Jerome:19.7/2.8/5.7/1.1/0.3/1.8/47.4/42.0/87.5
+Jaylen Wells:12.5/3.2/1.6/0.9/0.1/1.1/43.1/35.3/78.4
+Zach Edey:13.6/11.1/1.1/0.6/1.9/2.4/63.3/20.0/78.1
+Ayo Dosunmu:14.8/3.4/3.6/0.8/0.3/1.4/51.7/43.9/87.6
+Jaden McDaniels:14.8/4.2/2.7/1.1/1.0/1.8/51.5/41.2/83.5
+Dejounte Murray:16.7/5.4/6.4/1.6/0.2/3.4/48.4/30.6/86.7
+Cason Wallace:8.6/3.1/2.6/1.9/0.4/0.9/43.2/35.1/80.9
+Miles Bridges:17.1/5.8/3.2/0.6/0.4/1.4/46.0/33.3/82.2
+Mark Williams:11.7/8.0/1.0/0.9/0.9/1.1/64.4/100/77.1
+Ja Morant:19.5/3.3/8.1/1.0/0.3/3.6/41.0/23.5/89.7
+Toumani Camara:13.4/5.1/2.5/1.1/0.4/1.8/44.0/37.0/70.8
+Donovan Clingan:12.1/11.6/2.1/0.6/1.7/1.2/52.0/34.1/68.0
+De'Andre Hunter:13.7/4.1/2.0/0.7/0.1/1.7/41.5/30.5/86.7
+Stephon Castle:16.7/5.3/7.4/1.1/0.3/3.2/47.1/33.2/73.4
+Devin Vassell:13.9/4.0/2.5/0.9/0.4/0.9/43.7/38.4/81.5
+Julian Champagnie:11.1/5.8/1.5/0.8/0.5/0.8/43.7/38.1/84.4
+Keyonte George:23.6/3.7/6.1/1.1/0.3/3.1/45.6/37.1/89.2
+Jusuf Nurkic:10.9/10.4/4.8/1.3/0.5/2.5/50.3/35.2/54.9
+Scoot Henderson:14.2/2.7/3.7/0.9/0.3/2.4/41.8/35.2/84.0
+Reed Sheppard:13.5/2.9/3.4/1.5/0.7/1.5/43.0/39.4/80.2
+Anthony Black:15.0/3.8/3.7/1.4/0.7/2.1/44.7/33.3/73.2
+Kevin Porter Jr.:17.4/5.2/7.4/2.2/0.5/2.9/46.5/32.2/87.8
+Jared McCain:8.3/2.0/1.3/0.5/0.1/0.8/42.5/38.5/86.4
+Ajay Mitchell:13.6/3.3/3.6/1.2/0.3/1.4/48.5/34.7/87.0
+Bub Carrington:10.7/3.4/4.6/0.6/0.2/2.3/42.4/40.8/73.0
+Russell Westbrook:15.2/5.4/6.7/1.3/0.2/3.3/42.7/33.8/69.4
+Rob Dillingham:6.3/2.0/2.2/0.7/0.1/1.5/39.6/31.6/74.5
+Isaiah Collier:11.7/2.5/7.2/1.1/0.3/2.5/49.5/27.0/72.2
+Donte DiVincenzo:12.2/4.1/3.8/1.3/0.4/1.4/40.6/37.9/74.3
+Jordan Clarkson:8.6/1.8/1.3/0.4/0.1/0.9/45.1/32.7/83.0
+Isaiah Joe:11.1/2.5/1.3/0.7/0.2/0.6/45.5/42.3/89.4
+Gradey Dick:6.0/1.9/0.7/0.6/0.1/0.6/41.9/30.1/87.5
+Dalton Knecht:4.2/1.4/0.4/0.2/0.2/0.4/45.5/34.2/72.7
+Kentavious Caldwell-Pope:8.4/2.5/2.7/0.8/0.2/1.2/41.0/31.6/91.3
+Buddy Hield:7.6/2.3/1.4/0.8/0.2/0.9/43.7/34.9/81.1
+Ochai Agbaji:5.1/2.3/0.8/0.4/0.3/0.5/43.6/26.6/83.7
+Pat Connaughton:2.6/1.5/0.4/0.3/0.0/0.3/44.7/40.4/65.0
+Zaccharie Risacher:9.6/3.8/1.1/0.9/0.5/0.9/45.5/36.8/64.4
+Bilal Coulibaly:11.7/4.3/2.6/1.3/1.0/1.4/42.5/31.9/74.6
+Ron Holland:8.2/4.0/1.2/1.2/0.3/1.2/43.2/25.3/80.5
+Cam Whitmore:9.2/2.8/0.7/0.7/0.4/0.9/45.6/28.6/74.2
+Harrison Barnes:9.9/2.8/1.9/0.6/0.2/0.8/45.6/38.8/82.9
+Keldon Johnson:13.2/5.4/1.4/0.6/0.1/0.9/51.9/36.3/79.4
+Tari Eason:10.5/6.3/1.5/1.2/0.5/1.4/41.6/35.8/77.6
+Naji Marshall:15.2/4.7/3.3/1.1/0.1/1.6/51.0/29.1/76.0
+Dorian Finney-Smith:3.3/2.5/1.0/0.4/0.2/0.6/33.3/27.0/88.9
+Sam Hauser:9.2/3.8/1.5/0.5/0.3/0.4/41.9/39.3/85.0
+Brice Sensabaugh:14.9/3.1/1.9/0.7/0.2/1.7/46.0/36.7/82.6
+Kevin Love:6.7/5.8/1.8/0.4/0.2/0.8/39.7/37.3/84.1
+Trayce Jackson-Davis:3.4/2.7/0.7/0.3/0.5/0.4/57.3/100/51.4
+Grant Williams:7.0/3.9/1.6/0.5/0.5/0.9/42.6/38.8/81.5
+Tidjane Salaun:6.0/4.0/0.7/0.4/0.2/0.7/50.3/43.4/65.0
+Taylor Hendricks:7.4/3.7/0.9/0.8/0.5/0.8/45.9/34.2/68.1
+Zach Collins:9.7/5.6/1.5/0.2/0.4/1.0/57.8/42.9/70.0
+Jarace Walker:11.6/5.1/2.5/0.8/0.3/1.8/41.9/37.4/74.9
+Kyle Filipowski:11.4/7.2/2.6/0.9/0.5/1.6/49.2/32.5/75.0
+Nikola Vucevic:15.1/8.4/3.3/0.6/0.6/1.3/49.3/36.9/82.8
+Kel'el Ware:11.1/9.0/0.7/0.8/1.1/0.8/53.0/39.5/74.0
+Luke Kornet:6.5/6.1/1.9/0.5/1.0/0.4/64.3/-/82.5
+Robert Williams III:6.7/7.0/1.0/0.6/1.5/0.8/70.8/39.1/59.6
+Ryan Kalkbrenner:7.6/5.5/0.8/0.5/1.5/0.9/75.3/0.0/71.6
+Nick Richards:5.8/5.1/0.3/0.2/0.7/1.2/51.2/27.8/64.4
+Kevon Looney:2.8/5.6/1.6/0.4/0.5/0.4/41.7/15.4/70.0
+Jaxson Hayes:7.5/4.1/0.9/0.4/0.8/0.5/75.6/100/65.3
+Jaylin Williams:7.2/5.5/2.4/0.5/0.6/1.0/42.3/38.3/79.3
+Dereck Lively II:4.3/5.3/1.9/0.6/1.6/1.4/61.1/-/80.0
+PJ Washington:14.2/7.0/1.8/1.0/1.1/1.7/45.0/32.5/68.7
+AJ Dybantsa:25.5/6.8/3.7/1.1/0.3/3.1/51.0/33.1/77.4
+Darryn Peterson:20.2/4.2/1.6/1.4/0.6/?/43.8/38.2/82.6
+Cameron Boozer:22.5/10.2/4.1/1.4/0.6/2.5/55.6/39.1/78.9
+Caleb Wilson:19.8/9.4/2.7/1.5/1.4/2.0/57.8/25.9/71.3
+Darius Acuff Jr.:23.5/3.1/6.4/0.8/0.3/2.2/48.4/44.0/80.9
+Kingston Flemings:16.1/4.1/5.2/1.5/0.3/1.8/47.6/38.7/84.5
+Keaton Wagler:17.9/5.1/4.2/0.9/0.4/1.8/44.5/39.7/79.6
+Mikel Brown Jr.:18.2/3.3/4.7/1.2/0.1/3.1/41.0/34.4/84.4
+Brayden Burries:16.2/4.8/2.5/1.5/0.2/1.5/50.2/39.5/80.4
+Morez Johnson Jr.:13.1/7.3/1.2/0.7/1.1/1.3/62.3/34.3/78.2
+Yaxel Lendeborg:15.1/6.8/3.2/1.1/1.2/1.1/51.5/37.2/82.4
+Aday Mara:12.1/6.8/2.4/0.4/2.6/2.0/66.8/30.0/56.4
+Nate Ament:16.7/6.3/2.3/1.0/0.6/2.3/39.9/33.3/79.0
+Hannes Steinbach:18.5/11.8/1.6/1.1/1.2/2.0/57.7/34.0/75.9
+Dailyn Swain:17.3/7.5/3.6/?/?/?/54.2/34.4/81.5
+Bennett Stirtz:19.8/2.6/4.4/1.4/0.2/1.8/47.7/35.8/84.8
+Ebuka Okorie:23.2/3.6/3.6/1.6/0.3/?/46.5/35.4/83.2
+Christian Anderson Jr.:18.5/3.6/7.4/1.5/0.2/?/47.2/41.5/80.5
+Jayden Quaintance:5.0/5.0/0.5/0.5/0.8/1.5/57.1/-/30.8
+Labaron Philon Jr.:22.0/3.2/5.0/?/?/?/50.7/39.9/?
+Cameron Carr:18.9/5.8/2.6/0.9/1.3/?/49.4/37.4/80.1
+Koa Peat:13.9/5.4/2.6/0.6/0.7/1.7/53.9/31.6/61.9
+Allen Graves:11.8/6.5/1.8/1.9/0.9/0.7/51.2/41.3/75.0
+Zuby Ejiofor:16.3/7.3/3.5/1.2/2.1/2.1/53.6/30.5/71.8
+Tarris Reed Jr.:14.7/9.0/2.3/0.9/2.0/1.9/60.7/-/61.7
+Alex Karaban:13.3/5.3/2.4/0.8/0.8/1.1/46.4/37.4/85.1
+`.trim().split('\n').forEach(l=>{const i=l.indexOf(':');NS[nk(l.slice(0,i))]=l.slice(i+1).split('/').map(x=>x==='?'?undefined:x==='-'?null:+x)});
+const nsd=p=>p.t==='N'&&!p.ps?NS[nk(p.n)]:undefined;
+const srcLabel=p=>ROOK26.has(p.n)?(NS[nk(p.n)]?'2025–26 College':'2025–26 College (est.)'):(NS[nk(p.n)]?'2025–26 NBA':'Prior-season');
+
+/* ===== Current-player ratings come from their in-game stat line ===== */
+(function(){
+  const AN=[[-5,54],[21.6,75],[29.2,80],[38,85],[54,92]],D=[0,0,0,.7,.4,1.6,46,35,77];
+  const lerp=v=>{if(v<=AN[0][0])return AN[0][1];for(let i=1;i<AN.length;i++)if(v<=AN[i][0]){const a=AN[i-1],b=AN[i];return a[1]+(v-a[0])/(b[0]-a[0])*(b[1]-a[1])}return Math.min(94,92+(v-54)*.15)};
+  P.forEach(p=>{
+    if(p.t!=='N')return;
+    const d=NS[nk(p.n)];if(!d||d[0]==null||d[1]==null||d[2]==null)return;
+    const g=i=>d[i]!=null?d[i]:D[i],m=ROOK26.has(p.n)?.85:1;
+    const v=(g(0)+.85*g(1)+1.35*g(2))*m+2.2*g(3)+1.8*g(4)-1.7*g(5)+.15*(g(6)-46)+.05*(g(7)-35)+.05*(g(8)-77);
+    p.r=Math.round(lerp(v));
+  });
+})();
+
+// ===== Animated full simulation =====
+let ANIM=null,animT=null,ANIMSP=2;
+const animating=()=>!!(S&&S.over&&S.sim&&!S.live&&S.sim.ev&&!(ANIM&&ANIM.id===S.sim.id&&ANIM.done));
+function genEvents(q,box){
+  const ev=[];
+  [0,1].forEach(i=>{
+    const pool=[];
+    (box[i]||[]).forEach(p=>{let r=p.pts;while(r>0){const x=Math.random();let v=x<.3?3:x<.9?2:1;if(v>r)v=r;pool.push([v,p.n]);r-=v}});
+    sh(pool);
+    q[i].forEach((P,k)=>{
+      const st=k<4?k*720:2880+(k-4)*300,len=k<4?720:300,got=[];let need=P;
+      while(need>0){
+        if(!pool.length)pool.push([need,S.T[i].name]);
+        let j=pool.findIndex(x=>x[0]<=need);
+        if(j<0){const x=pool[0];pool.splice(0,1,[need,x[1]],[x[0]-need,x[1]]);j=0}
+        const x=pool.splice(j,1)[0];got.push(x);need-=x[0];
+      }
+      const ts=got.map(()=>st+1+Math.random()*(len-2)).sort((a,b)=>a-b);
+      got.forEach((x,j)=>ev.push([ts[j],i,x[0],x[1]]));
+    });
+  });
+  return ev.sort((a,b)=>a[0]-b[0]);
+}
+function startAnim(){
+  const end=S.sim.q[0].reduce((s,_,k)=>s+(k<4?720:300),0);
+  ANIM={id:S.sim.id,t:0,end,sp:ANIMSP,ei:0,sc:[0,0],feed:[],last:performance.now(),done:false};
+  clearInterval(animT);animT=setInterval(animTick,80);
+}
+function animTick(){
+  if(!ANIM||!animating()){clearInterval(animT);animT=null;return}
+  const now=performance.now(),dt=Math.min(.25,(now-ANIM.last)/1000);ANIM.last=now;
+  ANIM.t=Math.min(ANIM.end,ANIM.t+dt*48*ANIM.sp);
+  const ev=S.sim.ev;
+  while(ANIM.ei<ev.length&&ev[ANIM.ei][0]<=ANIM.t){const e=ev[ANIM.ei++];ANIM.sc[e[1]]+=e[2];swish(e[2]);ANIM.feed.unshift(e);if(ANIM.feed.length>5)ANIM.feed.length=5}
+  animPaint();
+  if(ANIM.t>=ANIM.end){ANIM.done=true;clearInterval(animT);animT=null;setTimeout(()=>{if(S&&S.sim)render()},700)}
+}
+function animPaint(){
+  const A=ANIM,g=id=>document.getElementById(id);if(!A||!g('as0'))return;
+  [0,1].forEach(i=>{const el=g('as'+i);if(el.textContent!==String(A.sc[i])){el.textContent=A.sc[i];el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop')}});
+  const nq=S.sim.q[0].length;let k=A.t>=2880?4+Math.floor((A.t-2880)/300):Math.floor(A.t/720);if(k>=nq)k=nq-1;
+  const st=k<4?k*720:2880+(k-4)*300,len=k<4?720:300,rem=Math.max(0,Math.ceil(len-(A.t-st)));
+  g('aq').textContent=k<4?'Q'+(k+1):'OT'+(k>4?k-3:'');
+  g('ac').textContent=Math.floor(rem/60)+':'+String(rem%60).padStart(2,'0');
+  g('apb').style.width=(A.t/A.end*100)+'%';
+  g('af').innerHTML=A.feed.map(e=>`<div class="fe t${e[1]}"><b>+${e[2]}</b> ${e[3]} <small>${S.T[e[1]].name}</small></div>`).join('');
+}
+function setSpd(v){ANIMSP=v;if(ANIM)ANIM.sp=v;document.querySelectorAll('.spd').forEach(b=>b.classList.toggle('on',+b.dataset.v===v))}
+function skipAnim(){if(ANIM){ANIM.done=true}clearInterval(animT);animT=null;render()}
+function animUI(){
+  return `<div class="card sbd"><div class="tag" style="color:var(--gold);font-weight:800;letter-spacing:.14em">🔴 LIVE · FULL SIMULATION</div>
+  <div class="sbr"><div class="sbt t0"><div class="sbn">${S.T[0].name}</div><div class="sbs" id="as0">0</div></div><div class="sbm"><div class="sbq" id="aq">Q1</div><div class="sbc" id="ac">12:00</div></div><div class="sbt t1"><div class="sbn">${S.T[1].name}</div><div class="sbs" id="as1">0</div></div></div>
+  <div class="pbar"><i id="apb"></i></div>
+  <div class="spds"><span>Speed</span>${[1,2,4,8].map(v=>`<button class="spd${ANIMSP===v?' on':''}" data-v="${v}" onclick="setSpd(${v})">${v}×</button>`).join('')}</div>
+  <div class="feed" id="af"></div>
+  <button class="sold" onclick="skipAnim()">Skip to final ⏭</button></div>`;
+}
+
+
+/* ===== Achievements (saved in this browser with localStorage) ===== */
+const ACH=[
+ ['first','🏆','First Win','Win your first game'],
+ ['hard','🔴','Hard Hitter','Beat the Hard bot'],
+ ['allin','💸','All In','Win with $0 left'],
+ ['thrifty','🪙','Penny Pincher','Win with $8 or more left'],
+ ['perfect','🎯','Perfect Fit','Win with all 5 starters at their natural position'],
+ ['chem','🔗','Chemistry Set','Win with 3 or more chemistry players'],
+ ['legend','⭐','Legend Owner','Draft a player rated 90+'],
+ ['bargain','🛒','Bargain Hunter','Get an 85+ player for $1 or less'],
+ ['blowout','💥','Blowout','Win by 20 or more'],
+ ['nail','😅','Nail-biter','Win by 3 or less'],
+ ['streak3','🔥','Hot Streak','Win 3 games in a row'],
+ ['vet','🔟','Veteran','Play 10 games']
+];
+let AS={un:{},games:0,wins:0,streak:0};
+try{const x=JSON.parse(localStorage.getItem('nbaAch')||'null');if(x&&x.un)AS=Object.assign(AS,x)}catch(e){}
+function achSave(){try{localStorage.setItem('nbaAch',JSON.stringify(AS))}catch(e){}}
+function achToast(a){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 12px);transform:translateX(-50%);z-index:120;background:var(--card);color:var(--fg);border:2px solid var(--gold);border-radius:14px;padding:10px 16px;box-shadow:var(--sh);font-weight:800;font-size:14px;max-width:90%;text-align:center';
+  d.textContent=a[1]+' Achievement unlocked: '+a[2];
+  document.body.appendChild(d);setTimeout(()=>d.remove(),3800);
+}
+function achCheck(){
+  if(!S||S.achDone||!S.over||!S.sim||S.live)return;
+  const me=MODE==='bot'?0:MODE==='host'?0:MODE==='guest'?1:null;
+  if(me===null)return;
+  S.achDone=true;
+  const tt=S.sim.tot,won=tt[me]>tt[1-me],margin=Math.abs(tt[0]-tt[1]),t=S.T[me],es=Object.values(t.roster),ok=[];
+  AS.games++;
+  if(won){AS.wins++;AS.streak++}else AS.streak=0;
+  if(es.some(e=>e.r0>=90))ok.push('legend');
+  if(es.some(e=>e.r0>=85&&e.price<=1))ok.push('bargain');
+  if(AS.games>=10)ok.push('vet');
+  if(won){
+    ok.push('first');
+    if(MODE==='bot'&&LVL==='hard')ok.push('hard');
+    if(t.cash===0)ok.push('allin');
+    if(t.cash>=8)ok.push('thrifty');
+    if(nat(t))ok.push('perfect');
+    if(chem(t).on.size>=3)ok.push('chem');
+    if(margin>=20)ok.push('blowout');
+    if(margin<=3)ok.push('nail');
+    if(AS.streak>=3)ok.push('streak3');
+  }
+  ok.forEach(id=>{if(!AS.un[id]){AS.un[id]=Date.now();const a=ACH.find(x=>x[0]===id);if(a)achToast(a)}});
+  achSave();
+}
+function showAch(){
+  const n=ACH.filter(a=>AS.un[a[0]]).length;
+  document.getElementById('app').innerHTML=`<div class="hero"><div class="ball">🏅</div><h1>Achievements</h1><div class="hs">${n} / ${ACH.length} unlocked · ${AS.wins} wins in ${AS.games} games · streak ${AS.streak}</div></div>
+  <div style="margin-top:14px">${ACH.map(a=>{const u=!!AS.un[a[0]];return `<div class="card" style="margin:8px 0;padding:12px 14px;text-align:left;display:flex;gap:12px;align-items:center;${u?'border-color:var(--gold)':'opacity:.55'}"><div style="font-size:28px;${u?'':'filter:grayscale(1)'}">${a[1]}</div><div><div style="font-weight:800">${a[2]}${u?' ✓':''}</div><div class="tag">${a[3]}</div></div></div>`}).join('')}</div>
+  <div class="lv"><a href="#" onclick="if(confirm('Reset all achievements?')){AS={un:{},games:0,wins:0,streak:0};achSave();showAch()}return false">Reset achievements</a></div>
+  <button class="sold" onclick="menu()">Back to menu</button>`;
+}
+
+menu();
+
+(function(){const R=render;
+  render=function(){const r=R.apply(this,arguments);
+    try{if(S&&S.over&&S.sim&&!S.live&&!animating())achCheck()}catch(e){}
+    return r}})();
+
+
+/* ===== Sound: button clicks, swish on scoring, lo-fi music ===== */
+let AC=null,SFXON=true,MUSIC=true,MB=null,MT=null,NT=0,SI=0,LSW=0,NBF=null;
+try{SFXON=localStorage.getItem('nbaSfx')!=='0';MUSIC=localStorage.getItem('nbaMusic')!=='0'}catch(e){}
+function ac(){try{if(!AC)AC=new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}catch(e){return null}}
+function nbuf(c){if(!NBF){NBF=c.createBuffer(1,c.sampleRate,c.sampleRate);const a=NBF.getChannelData(0);for(let i=0;i<a.length;i++)a[i]=Math.random()*2-1}return NBF}
+function clickS(){
+  const c=ac();if(!c||!SFXON)return;const t=c.currentTime,o=c.createOscillator(),g=c.createGain();
+  o.type='square';o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(900,t+.05);
+  g.gain.setValueAtTime(.07,t);g.gain.exponentialRampToValueAtTime(.0001,t+.09);
+  o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+.1);
+}
+function swish(pts){
+  const c=ac();if(!c||!SFXON)return;const n=performance.now();if(n-LSW<110)return;LSW=n;
+  const t=c.currentTime,s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain(),d=pts>=3?.34:.22,v=pts>=3?.5:pts===1?.18:.32;
+  s.buffer=nbuf(c);f.type='bandpass';f.Q.value=1.2;
+  f.frequency.setValueAtTime(pts>=3?3800:2800,t);f.frequency.exponentialRampToValueAtTime(900,t+d);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  s.connect(f);f.connect(g);g.connect(c.destination);s.start(t,Math.random()*.5,d+.05);
+}
+const MV=.16,BPM=72,EN=60/BPM/2;
+const CH=[[174.61,220,261.63,329.63],[164.81,196,246.94,293.66],[146.83,174.61,220,261.63],[130.81,164.81,196,246.94]];
+const BASS=[87.31,82.41,73.42,65.41],SCL=[392,440,523.25,587.33,659.25,783.99];
+function musBuild(){
+  if(MB)return;
+  const c=AC,mg=c.createGain(),lp=c.createBiquadFilter(),mel=c.createGain(),dl=c.createDelay(1),fb=c.createGain(),dg=c.createGain(),lfo=c.createOscillator(),lg=c.createGain();
+  mg.gain.value=0;lp.type='lowpass';lp.frequency.value=1400;lp.Q.value=.4;
+  dl.delayTime.value=.42;fb.gain.value=.32;dg.gain.value=.3;
+  lfo.frequency.value=.35;lg.gain.value=9;lfo.connect(lg);lfo.start();
+  mel.connect(lp);mel.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(dg);dg.connect(mg);
+  lp.connect(mg);mg.connect(c.destination);
+  MB={mg,lp,mel,lg};
+}
+function mIns(f,t,d,type,v,dest,att,wob){
+  const c=AC,o=c.createOscillator(),g=c.createGain();
+  o.type=type;o.frequency.value=f;if(wob)MB.lg.connect(o.detune);
+  g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(v,t+(att||.02));g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g);g.connect(dest);o.start(t);o.stop(t+d+.05);
+  o.onended=()=>{try{MB.lg.disconnect(o.detune)}catch(e){}};
+}
+function mNoise(t,d,v,hp){
+  const c=AC,s=c.createBufferSource(),g=c.createGain(),f=c.createBiquadFilter();
+  s.buffer=nbuf(c);f.type='highpass';f.frequency.value=hp;
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  s.connect(f);f.connect(g);g.connect(MB.lp);s.start(t,Math.random()*.8,d+.02);
+}
+function mKick(t){
+  const c=AC,o=c.createOscillator(),g=c.createGain();
+  o.frequency.setValueAtTime(115,t);o.frequency.exponentialRampToValueAtTime(42,t+.14);
+  g.gain.setValueAtTime(.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+.2);
+  o.connect(g);g.connect(MB.lp);o.start(t);o.stop(t+.22);
+}
+function mStep(i,t0){
+  const bar=Math.floor(i/8)%4,s=i%8,t=t0+(s%2?EN*.18:0);
+  if(s===0){CH[bar].forEach(f=>mIns(f,t,EN*7.6,'triangle',.045,MB.lp,.35,true));mIns(BASS[bar],t,EN*3,'triangle',.17,MB.lp,.02)}
+  if(s===4)mIns(BASS[bar],t,EN*2.6,'triangle',.12,MB.lp,.02);
+  if(s===0||s===4)mKick(t);
+  if(s===2||s===6)mNoise(t,.12,.05,1800);
+  mNoise(t,.04,s%2?.01:.018,6500);
+  if(Math.random()<(s%2?.18:.4))mIns(SCL[Math.random()*SCL.length|0],t,EN*(1+Math.random()*1.6),'square',.03,MB.mel,.015,true);
+}
+function startMusic(){
+  if(!MUSIC||MT||!ac())return;
+  musBuild();const c=AC;NT=c.currentTime+.15;SI=0;
+  MB.mg.gain.cancelScheduledValues(c.currentTime);MB.mg.gain.setTargetAtTime(MV,c.currentTime,1.2);
+  MT=setInterval(()=>{if(!AC)return;while(NT<AC.currentTime+.4){mStep(SI++,NT);NT+=EN}},100);
+}
+function stopMusic(){if(MT){clearInterval(MT);MT=null}if(MB&&AC)MB.mg.gain.setTargetAtTime(0,AC.currentTime,.25)}
+function sndUI(){
+  const m=document.getElementById('mus'),x=document.getElementById('sfx');
+  if(m)m.textContent=MUSIC?'🎵':'🔕';if(x)x.textContent=SFXON?'🔊':'🔇';
+}
+function musTog(){MUSIC=!MUSIC;try{localStorage.setItem('nbaMusic',MUSIC?'1':'0')}catch(e){}sndUI();MUSIC?startMusic():stopMusic()}
+function sfxTog(){SFXON=!SFXON;try{localStorage.setItem('nbaSfx',SFXON?'1':'0')}catch(e){}sndUI()}
+(function(){
+  const mk=(id,left,fn)=>{const b=document.createElement('button');b.id=id;b.onclick=fn;b.style.cssText='position:fixed;left:'+left+'px;bottom:12px;z-index:99;width:44px;height:44px;border-radius:50%;border:0;font-size:20px;cursor:pointer;background:var(--card);box-shadow:0 4px 14px rgba(0,0,0,.25);padding:0';document.body.appendChild(b)};
+  mk('mus',12,musTog);mk('sfx',64,sfxTog);sndUI();
+  document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('button,.tb,.pc,.slot,.lvc,.ci,.sg'))clickS()},true);
+  const go=()=>{ac();startMusic()};
+  document.addEventListener('pointerdown',go,{once:true});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)stopMusic();else if(MUSIC)startMusic()});
+})();
+</script></body></html>
